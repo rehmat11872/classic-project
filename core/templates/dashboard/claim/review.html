@@ -1,0 +1,376 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard - Verify Claim Application - {{ category_name }} {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+  <!-- Header -->
+  <div class="header bg-primary pb-6">
+    <div class="container-fluid">
+      <div class="header-body">
+        <div class="row align-items-center py-4">
+          <div class="col-lg-6 col-7">
+            <h6 class="h2 text-white d-inline-block mb-0">CIDB</h6>
+            <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+              <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboards</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard_claim_dashboard' role %}">Claim Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">New Claim Application - {{ category_name }}</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+        <!-- Card stats -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Page content -->
+  <div class="container-fluid mt--6">
+
+    <div class="row">
+      <!-- User Information -->
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-header text-center">
+            <h2 class="mb-0">Applicant Information</h2>
+            <p class="text-muted text-center">Role : {{ claim.user.get_role_display }}</p>
+          </div>
+          <div class="card-body">
+                <fieldset disabled>
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_title">Name</label>
+                    <input type="text" name="" class="form-control" id="input_title" value="{{ claim.user.name }}" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_title">IC Number</label>
+                    <input type="text" name="" class="form-control" id="input_title" placeholder="eg. 910101223333" value="{{ claim.user.icno }}" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_announcement">Email</label>
+                    <input type="text" name="" class="form-control" id="input_title" value="{{ claim.user.email }}" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_announcement">Contact Number</label>
+                    <input type="text" name="" class="form-control" id="input_title" value="{{ claim.user.hp_no }}" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_title">Home Address</label>
+                    <input type="text" name="" class="form-control" id="input_title" value="{{ claim.user.address1 }}, {{ claim.user.address2 }}, {{ claim.user.postcode }}, {{ claim.user.city }}, {{ claim.user.state }}" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_title">Office Address</label>
+                    <input type="text" name="" class="form-control" id="input_title" readonly>
+                  </div>
+                </fieldset>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="card">
+          {% if claim.qaa %}
+            <div class="card-header text-center">
+                <h2 class="mb-0">Project Information</h2>
+            </div>
+            <div class="card-body">
+              <fieldset disabled>
+                <div class="form-group">
+                  <label class="form-control-label" for="input_title">Project</label>
+                  <h5>{{ claim.qaa.pi.project_title }}</h5>
+                </div>
+              </fieldset>
+            </div>
+          {% endif %}
+          {% if claim.training %}
+            <div class="card-header text-center">
+                <h2 class="mb-0">Training Information</h2>
+            </div>
+            <div class="card-body">
+              <fieldset disabled>
+                <div class="form-group">
+                  <label class="form-control-label" for="input_title">Training</label>
+                  <h5>{{ claim.training.traiing_name }}</h5>
+                </div>
+              </fieldset>
+            </div>
+          {% endif %}
+        </div>
+        <!-- New Claim -->
+        <div class="card">
+
+          <div class="card-header text-center">
+            <h2 class="mb-0">Claim Application</h2>
+          </div>
+        
+          <div class="card-body">
+              <fieldset>
+
+                <!-- Mileage -->
+                {% if claim.claim_category == "mileage" %}
+                  <div class="form-group">
+                    <label for="">Date</label>
+                    <input type="text" class="form-control dateinput" name="date_from" value="{{ claim.date_from }}" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Time</label>
+                    <div>
+                      <div class="d-inline-flex align-items-center">
+                        <label for="" class="mr-1"><small>From</small></label>
+                        <input type="text" class="form-control timeinput mr-3" name="time_from" value="{{ claim.time_from }}" readonly>
+                        <label for="" class="mr-1"><small>To</small></label>
+                        <input type="text" class="form-control timeinput mr-3" name="time_to" value="{{ claim.time_to }}" readonly>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="">From</label>
+                    <div>
+                      <div class="d-flex align-items-center">
+                        <input type="text" class="form-control mr-1" name="location_from" value="{{ claim.location_from }}" readonly>
+                        <input type="text" class="form-control mr-1" name="state_from" value="{{ claim.state_from }}" readonly>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Location</label>
+                    <div>
+                      <div class="d-flex align-items-center">
+                        <input type="text" class="form-control mr-1" name="location_from" value="{{ claim.location_to }}" readonly>
+                        <input type="text" class="form-control mr-1" name="state_from" value="{{ claim.state_to }}" readonly>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Distance</label>
+                    <div>
+                      <div class="d-inline-flex align-items-center">
+                        <input type="text" class="form-control decimal-input mr-3" style="width:100px;" name="mileage" value="{{ claim.mileage }}" readonly>
+                        <label for="" class="mr-1"><small>KM</small></label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Zone</label>
+                    <input type="text" class="form-control" name="zone" value="Zone {{ claim.zone }}" readonly readonly>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Purpose</label>
+                    <textarea class="form-control" name="notes" rows="3" readonly>{{ claim.notes }}</textarea>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Amount</label>
+                    <input type="text" class="form-control" name="zone" value="RM {{ claim.total_receipt_amount }}" readonly readonly>
+                  </div>
+                {% endif %}
+
+                <!-- FI -->
+                {% if claim.claim_category == "fi" %}
+                  <div class="form-group">
+                    <label for="">{% if role == 'assessor' %}Assessment{% endif %}{% if role == 'trainer' %}Training{% endif %} Start Date</label>
+                    <input type="text" class="form-control dateinput" name="date_from" value="{{ claim.date_from }}" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label for="">{% if role == 'assessor' %}Assessment{% endif %}{% if role == 'trainer' %}Training{% endif %} End Date</label>
+                    <input type="text" class="form-control dateinput" name="date_to" value="{{ claim.date_to }}" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Zone</label>
+                    <input type="text" class="form-control" name="zone" value="Zone {{ claim.zone }}" readonly readonly>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Amount</label>
+                    <input type="text" class="form-control" name="zone" value="RM {{ claim.total_receipt_amount }}" readonly readonly>
+                  </div>
+                {% endif %}
+
+                <!-- Public Transport -->
+                {% if claim.claim_category == "public_transport" %}
+                  <div class="form-group">
+                    <label for="">Type of Transport Used</label>
+                    <input type="text" class="form-control mr-1" name="transport_type" value="{{ claim.get_transport_type_display }}" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Transaction Date</label>
+                    <input type="text" class="form-control dateinput" name="date_of_transaction" value="{{ claim.date_of_transaction }}" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Receipt Number</label>
+                    <input type="text" class="form-control" name="receipt_number" value="{{ claim.receipt_number }}" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Receipt Amount</label>
+                    <div>
+                      <div class="d-inline-flex align-items-center">
+                        <label for="" class="mr-1"><small>RM</small></label>
+                        <input type="text" class="form-control decimal-input" style="width:200px;" name="total_receipt_amount" value="{{ claim.total_receipt_amount }}" readonly>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Upload Receipt</label>
+                    <br>
+                    <p><a href="{{ claim.attachments.url }}" class="btn btn-sm btn-primary">Download</a></p>
+                  </div>
+                {% endif %}
+
+                <!-- Accommodation -->
+                {% if claim.claim_category == "accommodation" %}
+                  <div class="form-group">
+                    <label for="">Type of Accommodation</label>
+                    <input type="text" class="form-control mr-1" name="accommodation_type" value="{{ claim.get_accommodation_type_display }}" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Transaction Date</label>
+                    <input type="text" class="form-control dateinput" name="date_of_transaction" value="{{ claim.date_of_transaction }}" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Receipt Number</label>
+                    <input type="text" class="form-control" name="receipt_number" value="{{ claim.receipt_number }}" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Receipt Amount</label>
+                    <div>
+                      <div class="d-inline-flex align-items-center">
+                        <label for="" class="mr-1"><small>RM</small></label>
+                        <input type="text" class="form-control decimal-input" style="width:200px;" name="total_receipt_amount" value="{{ claim.total_receipt_amount }}" readonly>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Upload Receipt</label>
+                    <a href="{{ claim.attachments.url }}" class="btn btn-sm btn-primary">Download</a>
+                  </div>
+                {% endif %}
+
+                <!-- Accommodation -->
+                {% if claim.claim_category == "others" %}
+                  <div class="form-group">
+                    <label for="">Type</label>
+                    <input type="text" class="form-control" name="notes" value="{{ claim.notes }}" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Transaction Date</label>
+                    <input type="text" class="form-control dateinput" name="date_of_transaction" value="{{ claim.date_of_transaction }}" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Receipt Number</label>
+                    <input type="text" class="form-control" name="receipt_number" value="{{ claim.receipt_number }}" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Receipt Amount</label>
+                    <div>
+                      <div class="d-inline-flex align-items-center">
+                        <label for="" class="mr-1"><small>RM</small></label>
+                        <input type="text" class="form-control decimal-input" style="width:200px;" name="total_receipt_amount" value="{{ claim.total_receipt_amount }}" readonly>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Upload Receipt</label>
+                    <a href="{{ claim.attachments.url }}" class="btn btn-sm btn-primary">Download</a>
+                  </div>
+                {% endif %}
+              </fieldset>
+              <div class="text-right">
+                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal_reject">Reject</button>
+                {% if mode == 'verify' %}
+                  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal_verify">Verify</button>
+                {% endif %}
+                {% if mode == 'approve' %}
+                  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal_approve">Approve</button>
+                {% endif %}
+              </div>
+              
+              <!-- Modal Verify -->
+              <form action="" method="POST">
+                {% csrf_token %}
+                {% if mode == 'verify' %}
+                <div class="modal fade" id="modal_verify" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Verify Claim Application</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                        <div class="modal-body">
+                          Are you sure you want to verify this claim application?
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                          <button type="submit" name="accept" class="btn btn-primary">Verify</button>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+                {% endif %}
+
+                <!-- Modal Approve -->
+                {% if mode == 'approve' %}
+                <div class="modal fade" id="modal_approve" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Approve Claim Application</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                        <div class="modal-body">
+                          Are you sure you want to approve this claim application?
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                          <button type="submit" name="accept" class="btn btn-primary">Approve</button>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+                {% endif %}
+
+                <!-- Modal Reject -->
+                <div class="modal fade" id="modal_reject" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Reject Claim Application</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                        <div class="modal-body">
+                          Are you sure you want to reject this claim application?
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                          <button type="submit" name="reject" class="btn btn-primary">Reject</button>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+  {% include 'includes/footer-dashboard.html' %}
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <script src="/static/assets/vendor/chart.js/dist/Chart.min.js"></script>
+  <script src="/static/assets/vendor/chart.js/dist/Chart.extension.js"></script>
+
+{% endblock javascripts %}

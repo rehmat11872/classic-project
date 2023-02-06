@@ -1,0 +1,159 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard - Contractor Profile {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+  <!-- Header -->
+  <div class="header bg-primary pb-6">
+    <div class="container-fluid">
+      <div class="header-body">
+        <div class="row align-items-center py-4">
+          <div class="col-lg-6 col-7">
+            <h6 class="h2 text-white d-inline-block mb-0">CIDB</h6>
+            <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+              <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboards</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Contractor Profile</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+        <!-- Card stats -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Page content -->
+  <div class="container-fluid mt--6">
+
+    <div class="row">
+      <div class="col-lg-8">
+        <div class="card">
+          <div class="card-header text-center">
+            <h2 class="mb-0">Contractor Profile</h2>
+          </div>
+          <div class="card-body">
+            <form action="" method="POST" enctype="multipart/form-data"> 
+              {% csrf_token %}
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_title">Name</label>
+                    <input type="text" name="name" class="form-control" id="input_title" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_title">SSM Number</label>
+                    <input type="text" name="ssm_number" class="form-control" id="input_title" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_announcement">Registered Address 1</label>
+                    <textarea class="form-control" name="registered_address1" id="input_announcement" rows="3" required></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_announcement">Registered Address 2</label>
+                    <textarea class="form-control" name="registered_address2" id="input_announcement" rows="3" required></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_title">Postcode</label>
+                    <input type="number" name="postcode1" class="form-control" id="input_title" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_title">City</label>
+                    <input type="text" name="city1" class="form-control" id="input_title" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_title">State</label>
+                    <input type="text" name="state1" class="form-control" id="input_title" required>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_title">CIDB Registration Number</label>
+                    <input type="text" name="cidb_registration_number" class="form-control" id="input_title" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_title">CIDB Registration Grade</label>
+                    <input type="text" name="cidb_registration_grade" class="form-control" id="input_title" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_title">Email</label>
+                    <input type="email" name="email" class="form-control" id="input_title" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_title">Phone Number</label>
+                    <input type="text" name="hpno" class="form-control" id="input_title" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_announcement">Correspondence Address 1</label>
+                    <textarea class="form-control" name="correspondence_address1" id="input_announcement" rows="3" required></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_announcement">Correspondence Address 2</label>
+                    <textarea class="form-control" name="correspondence_address2" id="input_announcement" rows="3" required></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_title">Postcode</label>
+                    <input type="number" name="postcode2" class="form-control" id="input_title" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_title">City</label>
+                    <input type="text" name="city2" class="form-control" id="input_title" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_title">State</label>
+                    <input type="text" name="state2" class="form-control" id="input_title" required>
+                  </div>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="card">
+          <div class="card-header text-center">
+            <h2 class="mb-0">Representative</h2>
+          </div>
+          <div class="card-body">
+            <form action="" method="POST" enctype="multipart/form-data"> 
+              {% csrf_token %}
+              <div class="form-group">
+                <label class="form-control-label" for="input_title">Name</label>
+                <input type="text" name="representative_name" class="form-control" id="input_title" required>
+              </div>
+              <div class="form-group">
+                <label class="form-control-label" for="input_title">Email</label>
+                <input type="email" name="representative_email" class="form-control" id="input_title" required>
+              </div>
+              <div class="form-group">
+                <label class="form-control-label" for="input_title">Phone Number</label>
+                <input type="text" name="representative_hpno" class="form-control" id="input_title" required>
+              </div>
+              <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+  {% include 'includes/footer-dashboard.html' %}
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <script src="/static/assets/vendor/chart.js/dist/Chart.min.js"></script>
+  <script src="/static/assets/vendor/chart.js/dist/Chart.extension.js"></script>
+
+{% endblock javascripts %}

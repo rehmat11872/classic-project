@@ -1,0 +1,180 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard - Training Feedback {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+  <!-- Header -->
+  <div class="header bg-primary pb-6">
+    <div class="container-fluid">
+      <div class="header-body">
+        <div class="row align-items-center py-4">
+          <div class="col-lg-6 col-7">
+            <h6 class="h2 text-white d-inline-block mb-0">CIDB</h6>
+            <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+              <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboards</a></li>
+                {% if mode == 'review' %}
+                  <li class="breadcrumb-item"><a href="{% url 'dashboard_training_feedback_list_staff' %}">Feedback List</a></li>
+                {% else %}
+                  <li class="breadcrumb-item"><a href="{% url 'dashboard_training_feedback_list_trainee' %}">Feedback List</a></li>
+                {% endif %}
+                <li class="breadcrumb-item active" aria-current="page">Training Feedback</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+        <!-- Card stats -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Page content -->
+  <div class="container-fluid mt--6">
+    <div class="row">
+      {% if mode == 'review' %}
+      <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+              <h2 class="text-center mb-0 pb-0">
+                Feedback Information - {{ feedback.training.training_name }}
+              </h2>
+            </div>
+            <div class="card-body">
+              <fieldset disabled>
+                <p class="mb-0"><strong>ID:</strong> {{ feedback.code_id }}</p>
+                <p class=""><strong>Date:</strong> {{ feedback.created_date }}</p>
+                <div class="form-group">
+                  <label for="id_description_1">Please provide in as much detail as possible the nature of your complaint.</label>
+                  <textarea name="description_1" id="id_description_1" rows="3" class="form-control">{{ feedback.description_1 }}</textarea>
+                </div>
+                <div class="form-group">
+                  <label for="id_description_2">Please provide how the actions you complaint about have affected you.</label>
+                  <textarea name="description_2" id="id_description_2" rows="3" class="form-control">{{ feedback.description_2 }}</textarea>
+                </div>
+                
+              </fieldset>
+            </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+              <h2 class="text-center mb-0 pb-0">
+                To be filled by CIDB Reviewer
+              </h2>
+            </div>
+            <div class="card-body">
+              <form action="" method="POST">
+                {% csrf_token %}
+                <fieldset>
+                  <div class="form-group">
+                    <label for="id_description_1">Send to</label>
+                    <textarea name="description_1" id="id_description_1" rows="3" class="form-control" disabled>{% for trainer in trainers %}{{ trainer.email }}, {% endfor %}</textarea>
+                  </div>
+                  <div class="form-group">
+                    <label for="warning">Warning</label>
+                    <textarea name="warning" id="warning" rows="3" class="form-control"></textarea>
+                  </div>
+                  <div class="text-right">
+                    <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal_feedback">Submit</a>
+                  </div>
+                  
+                  <!-- Modal -->
+                  <div class="modal fade" id="modal_feedback" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLabel">Send The Feedback</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <div class="modal-body">
+                          <p class="mb-0">Are you sure you want to send the feedback for this training?</p>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                          <button type="submit" name="accept" class="btn btn-primary">Confirm</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </fieldset>
+              </form>
+            </div>
+        </div>
+      </div>
+      {% else %}
+      <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+              <h2 class="text-center mb-0 pb-0">
+                Feedback Information - {{ training.training_name }}
+              </h2>
+            </div>
+            <div class="card-body">
+              <form action="" method="POST">
+                {% csrf_token %}
+                <fieldset>
+                  <div class="form-group">
+                    <label for="id_description_1">Please provide in as much detail as possible the nature of your complaint.</label>
+                    <textarea name="description_1" id="id_description_1" rows="3" class="form-control"></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label for="id_description_2">Please provide how the actions you complaint about have affected you.</label>
+                    <textarea name="description_2" id="id_description_2" rows="3" class="form-control"></textarea>
+                  </div>
+                  <p class="mb-0">I declare that the facts set forth in this feedback form are true and accurate.</p>
+                  <div class="text-right">
+                    <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal_feedback">Submit</a>
+                  </div>
+                  
+                  <!-- Modal -->
+                  <div class="modal fade" id="modal_feedback" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLabel">Send The Feedback</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <div class="modal-body">
+                          <p class="mb-0">Are you sure you want to send the feedback for this training?</p>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                          <button type="submit" name="accept" class="btn btn-primary">Confirm</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </fieldset>
+              </form>
+            </div>
+        </div>
+      </div>
+      
+      {% endif %}
+    </div>
+
+
+  </div>
+  {% include 'includes/footer-dashboard.html' %}
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <script src="/static/assets/vendor/chart.js/dist/Chart.min.js"></script>
+  <script src="/static/assets/vendor/chart.js/dist/Chart.extension.js"></script>
+
+{% endblock javascripts %}

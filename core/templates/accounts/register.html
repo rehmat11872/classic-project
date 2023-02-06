@@ -1,0 +1,95 @@
+{% extends "layouts/base-fullscreen.html" %}
+
+{% block title %} Register {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+  <!-- Page content -->
+  <div class="bg-01">
+    <div class="container py-8">
+      <!-- Table -->
+      <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+          <div class="card bg-secondary border-0">
+            <div class="card-header bg-transparent pb-5">
+
+              <h3 class="text-center">
+                REGISTER NEW ACCOUNT
+              </h3> 
+              <br />
+              <div class="text-muted text-center mt-2 mb-3">
+
+                {% if msg %}
+                  <span class="text-danger">{{ msg | safe }}</span>
+                {% else %}
+                  <span>
+                    Add your Credentials
+                  </span>
+                {% endif %}
+
+              </div>
+            </div>
+            <div class="card-body px-lg-5 py-lg-5">
+
+              <form role="form" method="post" action="">
+
+                {% csrf_token %}
+
+                <div class="form-group">
+                  <div class="input-group input-group-merge input-group-alternative mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="ni ni-email-83"></i></span>
+                    </div>
+                    {{ form.email }}
+                  </div>
+                </div>
+                <span class="text-error">{{ form.email.errors }}</span>
+
+                <div class="form-group">
+                  <div class="input-group input-group-merge input-group-alternative">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
+                    </div>
+                    {{ form.password1 }}
+                  </div>
+                </div>
+                <span class="text-error">{{ form.password1.errors }}</span>
+                 <hr class="my-1">
+                <p class="text-muted px-2"><small>
+                  Your password can't be too similar to your other personal information.
+                  <br>Your password must contain at least 8 characters.
+                  <br>Your password can't be a commonly used password.
+                  <br>Your password can't be entirely numeric.
+                </small></p>
+               
+                <div class="form-group">
+                  <div class="input-group input-group-merge input-group-alternative">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
+                    </div>
+                    {{ form.password2 }}
+                  </div>
+                </div>
+                <span class="text-error">{{ form.password2.errors }}</span>
+
+                <div class="text-center">
+                  <button type="submit" name="register" class="btn btn-primary my-4">Register</button>
+                </div>
+
+              </form>
+
+            </div>
+          </div>       
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

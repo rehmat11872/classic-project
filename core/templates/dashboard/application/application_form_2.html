@@ -1,0 +1,276 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard - New QLASSIC Application {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% load crispy_forms_tags %}
+{% load widget_tweaks %}
+
+{% load humanize %}
+
+{% block content %}
+
+  <!-- Header -->
+  <div class="header bg-primary pb-6">
+    <div class="container-fluid">
+      <div class="header-body">
+        <div class="row align-items-center py-4">
+          <div class="col-lg-6 col-7">
+            <h6 class="h2 text-white d-inline-block mb-0">CIDB</h6>
+            <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+              <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboards</a></li>
+                <li class="breadcrumb-item active" aria-current="page">New QLASSIC Application</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+        <!-- Card stats -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Page content -->
+  <div class="container-fluid mt--6">
+    <div class="row">
+      {% if not mode %}
+      <div class="col-lg-4">
+        <div class="card">
+          <div class="card-header text-center">
+            <h2 class="mb-0">Project</h2>
+          </div>
+          <div class="card-body text-center">
+            <h4>{{ contractor.project_title }}</h4>
+            {% comment %} {{ form_qaa|crispy }}
+            <hr>
+            {{ form_pi|crispy }} {% endcomment %}
+          </div>
+        </div>
+        <div class="card">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">1. APPLICANT INFORMATION </li>
+            <li class="list-group-item text-white bg-primary">2. PROJECT INFORMATION</li>
+            <li class="list-group-item">3. SUPPORTING DOCUMENTS</li>
+          </ul>
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="col-lg-8">
+        <div class="card">
+          <div class="card-header text-center">
+            <h2 class="mb-0">New QLASSIC Application</h2>
+          </div>
+          <div class="card-body">
+            <form action="" method="POST" enctype="multipart/form-data"> 
+              {% csrf_token %}
+
+              <h3 class="mt-3">PROJECT INFORMATION</h3>
+              <hr class="my-1">
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        {{ form_pi.rating_type|as_crispy_field }}
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        {{ form_pi.project_type|as_crispy_field }}
+                      </div>
+                    </div>
+                    {% if pi.contract_value >= 500000 %}
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        {{ form_pi.levy_receipt|as_crispy_field }}
+                      </div>
+                    </div>
+                    {% endif %}
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label for="input_announcement">Project Title</label>
+                        <textarea class="form-control" name="project_title" id="input_announcement" rows="3" required="" readonly>{{ pi.project_title }}</textarea>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        {{ form_pi.project_manager|as_crispy_field }}
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        {{ form_pi.developer|as_crispy_field }}
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        {{ form_pi.developer_ssm_number|as_crispy_field }}
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label for="input_title">Contractor name</label>
+                        <input type="text" name="contractor_name" class="form-control" id="input_title" value="{{ pi.contractor_name }}" required readonly>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label for="input_title">CIDB registration number</label>
+                        <input type="text" name="contractor_cidb_registration_no" class="form-control" id="input_title" value="{{ pi.contractor_cidb_registration_no }}" required readonly>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label for="input_title">CIDB registration grade</label>
+                        <input type="text" name="contractor_registration_grade" class="form-control" id="input_title" value="{{ pi.contractor_registration_grade }}" required readonly>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        {{ form_pi.iso9001|as_crispy_field }}
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        {{ form_pi.shassic|as_crispy_field }}
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        {{ form_pi.bim|as_crispy_field }}
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        {{ form_pi.mycrest|as_crispy_field }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label>Gross Floor Area (meter square)*</label>
+                        {% render_field form_pi.gfa class+="form-control decimal-input" type="text" %}
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label for="input_title">Contract Value</label>
+                        <input type="text" name="contract_value" class="form-control" id="input_title" value="RM{{ pi.contract_value|intcomma }}" required readonly>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label>Project Location</label>
+                        <select name="project_location" class="form-control" id="exampleFormControlSelect1" readonly>
+                          <option value="{{ pi.project_location }}">{{ pi.get_project_location_display }}</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        {{ form_pi.architect_firm|as_crispy_field }}
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        {{ form_pi.structural_civil_engineer_firm|as_crispy_field }}
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        {{ form_pi.mechanical_electrical_firm|as_crispy_field }}
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        {{ form_pi.site_representative|as_crispy_field }}
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label>Site representative email*</label>
+                        {% render_field form_pi.email class+="form-control" type="email" %}
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label>Site representative phone number*</label>
+                        {% render_field form_pi.hp_no class+="form-control phone-input" %}
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label>Construction method*</label>
+                        {% render_field form_pi.construction_method onchange="check_cm()" class+="form-control" %}
+                      </div>
+                    </div>
+                    <div class="col-md-12" id="form_ibs_percentage" style="display:none;">
+                      <div class="form-group">
+                        <label>IBS Percentage (%)</label>
+                        {% render_field form_pi.ibs_percentage class+="form-control decimal-input" type="text" %}
+                      </div>
+                    </div>
+                    <script>
+                      function check_cm(){
+                        if ($('#id_construction_method').prop("value") == 'ibs') {
+                          $('#form_ibs_percentage').css("display",'block');
+                        } else {
+                          $('#form_ibs_percentage').css("display",'none');
+                        }
+                      }
+                      $(document).ready( function () {
+                        check_cm();
+                      });
+                    </script>
+                  </div>
+                </div>
+              </div>
+
+              <a href="{% url 'dashboard_application_new' contractor.contractor_registration_number contractor.project_reference_number %}" class="btn btn-primary">Previous</a>
+              <button type="submit" class="btn btn-primary">Next</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      {% if mode %}
+      <div class="col-lg-4">
+        <div class="card">
+          {% if mode == 'review' %}
+          <div class="card-header text-center">
+            <h2 class="mb-0">To be filled by Reviewer</h2>
+          </div>
+          <div class="card-body">
+          </div>
+          {% endif %}
+          {% if mode == 'verify' %}
+          <div class="card-header text-center">
+            <h2 class="mb-0">To be filled by Verifier</h2>
+          </div>
+          <div class="card-body">
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+
+  </div>
+  {% include 'includes/footer-dashboard.html' %}
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <script src="/static/assets/vendor/chart.js/dist/Chart.min.js"></script>
+  <script src="/static/assets/vendor/chart.js/dist/Chart.extension.js"></script>
+
+{% endblock javascripts %}

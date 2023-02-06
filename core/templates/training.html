@@ -1,0 +1,54 @@
+{% extends "layouts/base-fullscreen.html" %}
+
+{% block title %} Training {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+  <div class="position-relative bg-01">
+    <div class="container py-8">
+      <div class="card" style="background:#00000044;">
+        <div class="card-body p-5">
+          <div class="card mb-4 mb-0">
+            <div class="card-body">
+              <p class="mb-0 text-center">Please create account in order to apply to join the training. If account is existed, you can simply log in into the system</p>
+            </div>
+          </div>
+          <div class="card mb-0">
+            <div class="table-responsive py-4">
+              <table class="table table-custom-simplified table-flush">
+                <thead class="thead-light">
+                  <tr>
+                    <th>ID</th>
+                    <th>Name of Training</th>
+                    <th>Fee</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for tra in trainings %}
+                  <tr>
+                    <th>{{ forloop.counter }}</th>
+                    <td>{{ tra.training_name }}</td>
+                    <td>RM {{ tra.fee }}</td>
+                    <td>{{ tra.from_date|date:'d M Y' }} - {{ tra.to_date|date:'d M Y' }}</td>
+                    <td>{{ tra.from_time }} - {{ tra.to_time }}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> 
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+  
+{% endblock javascripts %}

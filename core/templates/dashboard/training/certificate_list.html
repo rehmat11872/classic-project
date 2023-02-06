@@ -1,0 +1,213 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard - {{ title }} {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+  <!-- Header -->
+  <div class="header bg-primary pb-6">
+    <div class="container-fluid">
+      <div class="header-body">
+        <div class="row align-items-center py-4">
+          <div class="col-lg-6 col-7">
+            <h6 class="h2 text-white d-inline-block mb-0">CIDB</h6>
+            <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+              <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboards</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+        <!-- Card stats -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Page content -->
+  <div class="container-fluid mt--6">
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="text-center mb-0 pb-0">
+              List of Training Certificates
+            </h2>
+            {% if mode == 'trainee' %}
+            <div class="text-center mt-3">
+              <a href="{{ payment_history_url }}" class="btn btn-primary btn-sm" target="_blank">Payment History</a>
+            </div>
+            {% endif %}
+          </div>
+          <div class="table-responsive py-4">    
+            <table class="table table-custom-simplified">
+              <thead class="thead-light">
+                <tr>
+                  <th>Training Name</th>
+                  <th>Training Type</th>
+                  <th>Date</th>
+                  <th>Result</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for aa in trainings %}
+                <tr>
+                  <th>{{ aa.training.training_name }}</th>
+                  <th>{{ aa.training.training_type }}</th>
+                  <th>{{ aa.training.from_date }} - {{ aa.training.to_date }}</th>
+                  <th>{% if aa.pass_status %}{{ aa.get_pass_status_display }}{% else %}In Progress{% endif %}</th>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="text-center mb-0 pb-0">
+              QLASSIC Industry Assessor
+            </h2>
+          </div>
+          <div class="card-body text-center">
+            {% if mode == 'review' %}
+              <p class="mb-0"><strong>Trainee: </strong>{{ user.name }}</p>
+              <p class="mb-0"><strong>IC: </strong>{{ user.icno }}</p>
+              <p class="mb-0"><strong>Email: </strong>{{ user.email }}</p>
+            {% endif %}
+            <p class="mb-0">
+              <strong>Status: </strong>
+              {% if assessor %}
+              <span class="text-success">Certified</span>
+              {% elif user.qia_status == 'need_review' %}
+              <span class="">Pending</span>
+              {% elif user.qia_status == 'need_payment' %}
+              <span class="">Need Payment</span>
+              {% else %}
+              <span class="text-danger">Not Certified</span>
+              {% endif %}
+            </p>
+            <p class="mb-0"><strong>Application Number (For Reference): </strong>QIA-{{ user.code_id }}</p>
+            {% if assessor %}
+            <p><strong>Assessor Number: </strong>{{ assessor.qia_id }}</p>
+            {% endif %}
+            {% if assessor.qia_certificate_file %}
+              <p class=""><strong>Certificate File: </strong>
+                <a href="{{ assessor.qia_certificate_file.url }}">Download</a>
+              </p>
+            {% endif %}
+            <div>
+              <hr>
+              {% if mode == 'trainee' %}
+                {% if user.qia_status == 'need_payment' %}
+                <button onclick="ajax_payment_request('{{ user.id }}');" class="btn btn-sm btn-success w-100 mb-2">Pay Certificate</button>
+                {% endif %}
+              {% endif %}
+              {% if mode == 'review' %}
+                <a href="#" class="btn btn-primary mb-2" data-toggle="modal" data-target="#modal_approve">Notify Trainee to Make Payment</a>
+                <!-- Modal Reject -->
+                <form action="" method="POST">
+                  {% csrf_token %}
+                  <div class="modal fade" id="modal_approve" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLabel">Approve QIA Certificate</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <div class="modal-body">
+                          <p class="mb-0">Are you sure you want to approve the QLASSIC Industry Certificate of this trainee?</p>
+                        </div>
+                        <div class="modal-footer">
+                          <div class="d-flex" style="place-items:center;">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" name="reject" class="btn btn-primary">Send</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <form id="form_payment" action="" method="POST">
+    <input type="hidden" name="ClientReturnURL">
+    <input type="hidden" name="IcOrRoc">
+    <input type="hidden" name="OrderID">
+    <input type="hidden" name="Currency">
+    <input type="hidden" name="TransactionType">
+    <input type="hidden" name="ClientRef0">
+    <input type="hidden" name="ClientRef1">
+    <input type="hidden" name="ClientRef2">
+    <input type="hidden" name="ClientRef3">
+    <input type="hidden" name="ClientRef4">
+    <input type="hidden" name="Amount">
+    <input type="hidden" name="CustomerName">
+    <input type="hidden" name="CustomerEmail">
+    <input type="hidden" name="CustomerPhoneNo">
+  </form>
+
+  </div>
+  {% include 'includes/footer-dashboard.html' %}
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+  <script>
+   function ajax_payment_request(id) {
+    $.ajax({
+      method: "POST",
+      headers:{
+          "X-CSRFToken": "{{ csrf_token }}"
+      },
+      url: "{% url 'ajax_api_qia_payment_request' %}",
+      data: {
+        "id":id
+      },
+      dataType: 'json',
+      success: function (data) {
+        if (data.result == "PASS") {
+          $("#form_payment").attr("action", data.payment_gateway_url);
+          $("input[name='ClientReturnURL']").val(data.ClientReturnURL);
+          $("input[name='IcOrRoc']").val(data.IcOrRoc);
+          $("input[name='OrderID']").val(data.OrderID);
+          $("input[name='Currency']").val(data.Currency);
+          $("input[name='TransactionType']").val(data.TransactionType);
+          $("input[name='ClientRef0']").val(data.ClientRef0);
+          $("input[name='ClientRef1']").val(data.ClientRef1);
+          $("input[name='ClientRef2']").val(data.ClientRef2);
+          $("input[name='ClientRef3']").val(data.ClientRef3);
+          $("input[name='ClientRef4']").val(data.ClientRef4);
+          $("input[name='Amount']").val(data.Amount);
+          $("input[name='CustomerName']").val(data.CustomerName);
+          $("input[name='CustomerEmail']").val(data.CustomerEmail);
+          $("input[name='CustomerPhoneNo']").val(data.CustomerPhoneNo);
+          $("#form_payment").submit();
+        } else {
+          alert("Problem creating the proforma. Please check with the admin :"+ data.error);
+        }
+      }
+    });
+   }
+  </script>
+
+  <script src="/static/assets/vendor/chart.js/dist/Chart.min.js"></script>
+  <script src="/static/assets/vendor/chart.js/dist/Chart.extension.js"></script>
+
+{% endblock javascripts %}

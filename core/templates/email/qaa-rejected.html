@@ -1,0 +1,25 @@
+{% autoescape off %}
+Hi {{ user.name }},
+
+We regret to inform you that your QLASSIC Assessment Application has been rejected. Below are the details of your application:
+
+Application Number: {{ qaa.qaa_number }}
+Project Title: {{ qaa.pi.project_title }}
+Sector: {{ qaa.pi.project_type }}
+Project Value: RM {{ qaa.pi.project_value }}
+
+You can still reapply the application by amending the application details accordingly. Below are the remarks after reviewing the application:
+
+CASC Reviewer:
+{{ qaa.remarks1 }}
+
+CASC Verifier:
+{{ qaa.remarks2 }}
+
+Please do not hesitate to contact us if you need any further information.
+
+Thank you.
+CIDB QLASSIC TEAM
+
+[This is an automated message please do not reply]
+{% endautoescape %}

@@ -1,0 +1,110 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard - Project List {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% load humanize %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+  <!-- Header -->
+  <div class="header bg-primary pb-6">
+    <div class="container-fluid">
+      <div class="header-body">
+        <div class="row align-items-center py-4">
+          <div class="col-lg-6 col-7">
+            <h6 class="h2 text-white d-inline-block mb-0">CIDB</h6>
+            <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+              <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboards</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Project List</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+        <!-- Card stats -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Page content -->
+  <div class="container-fluid mt--6">
+
+    <div class="row">
+     
+        <div class="card">
+          
+          <div class="table-responsive py-4">
+            
+           
+   
+       <h2 class="text-center">Assesment</h2>
+
+
+            <table class="table table-custom-simplified table-flush">
+              <thead class="thead-light">
+                <tr>
+                  <th>User</th>
+                  <th>Assesor</th>
+                  <th>Block name</th>
+                  <th>Unit Number</th>
+                  <th>
+                    Number of sampling done:
+                    </th>
+                  <th>Number of principles samples:</th>
+                  <th>Number of services samples:</th>
+                  <th>Number of circulation samples:</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for data in obj %}
+                <tr>
+                  <th>
+                    {{data.user.email}}
+                   
+                   
+                  </th>
+                 
+                  <th>{{ data.assessor.user.email }}</th>
+                  <th>{{ data.block }}</th>
+                  <th>{{ data.unit }}</th>
+                  <th>{{ data.count_sampling_done }}</th>
+                  <th>{{ data.count_principle }}</th>
+                  <th>{{ data.count_services }}</th>
+                  <th>{{ data.count_circulation }}</th>
+
+                  
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  {% include 'includes/footer-dashboard.html' %}
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <script src="/static/assets/vendor/chart.js/dist/Chart.min.js"></script>
+  <script src="/static/assets/vendor/chart.js/dist/Chart.extension.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+  <script>
+
+
+
+
+
+  </script>
+
+{% endblock javascripts %}

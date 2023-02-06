@@ -1,0 +1,190 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard - Assessor Management {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+  <!-- Header -->
+  <div class="header bg-primary pb-6">
+    <div class="container-fluid">
+      <div class="header-body">
+        <div class="row align-items-center py-4">
+          <div class="col-lg-6 col-7">
+            <h6 class="h2 text-white d-inline-block mb-0">CIDB</h6>
+            <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+              <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboards</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Assessor Management</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+        <!-- Card stats -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Page content -->
+  <div class="container-fluid mt--6">
+
+    <div class="row">
+      {% if mode == 'list_all' %}
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header text-center">
+            <h2 class="mb-0">Manage Assessor</h2>
+          </div>
+          <div class="table-responsive py-4">
+            <div class="d-inline-flex justify-content-center">
+              <label class="mx-2 mb-0">Status:</label>
+              <select
+                class="form-control form-control-sm mr-2"
+                onchange="FilterTableData(value, 3)">
+                <option value="">ALL</option>
+                <option value="Verified">Verified</option>
+                <option value="Assessor Assigned">Assessor Assigned</option>
+                <option value="Confirm">Confirm</option>
+                <option value="In-Progress">In-Progress</option>
+                <option value="Completed">Completed</option>
+                <option value="Approved">Approved</option>
+              </select>
+            </div>
+            <table class="table table-custom-simplified table-flush">
+              <thead class="thead-light">
+                <tr>
+                  <th>Application Number</th>
+                  <th>Project Title</th>
+                  <th>
+                    Remarks 1 - by CASC Reviewer:
+                    ok
+                    </th>
+                    <th>Remarks 2 - by CASC Verifier:</th>
+                  <th>Assessor</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for qaa in qaas %}
+                <tr>
+                  <th>{{ qaa.qaa_number }}</th>
+                  <th>{{ qaa.pi.project_title }}</th>
+                 
+                  <th>{{qaa.remarks1}}</th>
+                  <th>{{qaa.remarks2}}</th>
+
+                  <th>
+                    {% for sa in suggested_assessors %}
+                      {% if sa.qaa == qaa %}
+                        <h5 class="mb-0">
+                        - {{ sa.assessor.user.name }}
+                       
+                        {% if sa.acception %}
+                          {% if sa.acception == 'accept' %}<i class="fas fa-check-circle text-success"></i>
+                          {% elif sa.acception == 'reject' %}<i class="fas fa-times-circle text-danger"></i>
+                          {% elif sa.acception == 'pending' %}<i class="fas fa-envelope text-muted"></i>
+                          {% else %}<i class="fas fa-exclamation-triangle text-warning"></i>
+                          {% endif %}
+                        {% else %}
+                          <i class="fas fa-minus-circle text-warning"></i>
+                        {% endif %}
+                        </h5>
+                      {% endif %}
+                    {% endfor %}
+                  </th>
+                  <th>{{ qaa.get_application_status_display }}</th>
+                  <td>
+                    <a href="{% url 'dashboard_application_info_assessor' qaa.id 'all' %}" class="btn btn-sm btn-info w-100 mb-2">View</button>
+
+                    {% if qaa.application_status == 'verified' %}
+                      {% if request.user.role == 'superadmin' or request.user.role == 'casc_verifier' %}
+                      <a href="{% url 'dashboard_application_assessor_assign' qaa.id %}" class="btn btn-sm btn-success w-100 mb-2">Assign</button>
+                      {% endif %}
+                    {% endif %}
+
+                    {% if request.user.role == 'superadmin' or request.user.role == 'casc_verifier' %}
+                      {% if qaa.application_status == 'assessor_assign' %}
+                      <a href="{% url 'dashboard_application_assessor_reassign' qaa.id %}" class="btn btn-sm btn-warning w-100 mb-2">Re-Assign</button>
+                      {% endif %}
+                    {% endif %}
+
+                    {% if sa.acception == 'pending' %}
+                      <a href="{% url 'dashboard_application_assessor_approve' sa.id %}" class="btn btn-sm btn-success w-100 mb-2">Verify</button>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+      {% if mode == 'list_own' %}
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header text-center">
+            <h2 class="mb-0">Manage Assessor</h2>
+          </div>
+          <div class="table-responsive py-4">
+            <div class="d-inline-flex justify-content-center">
+              <label class="mx-2 mb-0">Acception:</label>
+              <select
+                class="form-control form-control-sm mr-2"
+                onchange="FilterTableData(value, 3)">
+                <option value="">ALL</option>
+                <option value="Pending">Pending</option>
+                <option value="Accept">Accept</option>
+                <option value="Reject">Reject</option>
+                <option value="Wait For Respond">Wait For Respond</option>
+              </select>
+            </div>
+            <table class="table table-custom-simplified table-flush">
+              <thead class="thead-light">
+                <tr>
+                  <th>Application Number</th>
+                  <th>Project Title</th>
+                  <th>Location</th>
+                  <th>Acception</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for sa in suggested_assessors %}
+                <tr>
+                  <th>{{ sa.qaa.qaa_number }}</th>
+                  <th>{{ sa.qaa.pi.project_title }}</th>
+                  <th>{{ sa.qaa.pi.get_project_location_display }}</th>
+                  <th>{% if sa.acception %}{{ sa.get_acception_display }}{% else %}Pending{% endif %}</th>
+                  <td>
+                    <a href="{% url 'dashboard_application_info_assessor' sa.qaa.id 'own' %}" class="btn btn-sm btn-info w-100 mb-2">View</button>
+                    {% if sa.acception == 'pending' %}
+                    <a href="{% url 'dashboard_application_assessor_approve' sa.id %}" class="btn btn-sm btn-success w-100 mb-2">Verify</button>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+  </div>
+  {% include 'includes/footer-dashboard.html' %}
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <script src="/static/assets/vendor/chart.js/dist/Chart.min.js"></script>
+  <script src="/static/assets/vendor/chart.js/dist/Chart.extension.js"></script>
+
+{% endblock javascripts %}

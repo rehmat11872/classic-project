@@ -1,0 +1,159 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard - {{ title }} {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+  <!-- Header -->
+  <div class="header bg-primary pb-6">
+    <div class="container-fluid">
+      <div class="header-body">
+        <div class="row align-items-center py-4">
+          <div class="col-lg-6 col-7">
+            <h6 class="h2 text-white d-inline-block mb-0">CIDB</h6>
+            <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+              <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboards</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+        <!-- Card stats -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Page content -->
+  <div class="container-fluid mt--6">
+    <div class="row">
+      {% if mode == 'list' %}
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-header">
+                <h2 class="text-center mb-0 pb-0">
+                  List of Trainee (Eligible for QIA)
+                </h2>
+              </div>
+              <div class="table-responsive py-4">    
+                <table class="table table-custom-simplified">
+                  <thead class="thead-light">
+                    <tr>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for user in users %}
+                    <tr>
+                      <th>{{ user.name }}</th>
+                      <td>{{ user.email }}</td>
+                      <td><a href="{% url 'dashboard_qia_application_review' user.id %}" class="btn btn-primary btn-sm">Review</a></td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+          </div>
+        </div>
+      {% endif %}
+      {% if mode == 'payment' %}
+        <div class="col-lg-12">
+          <div class="card">
+            <div class="card-header text-center">
+              <h2 class="">QLASSIC Industry Assessor Certificate - Payment</h2>
+            </div>
+            <div class="card-body">
+              {% if proforma %}
+              <form action="{{ url }}" method="POST">
+                <input type="hidden" name="ClientReturnURL" value="{{ response_url }}">
+                <input type="hidden" name="IcOrRoc" value="{{ user.code_id }}">
+                <input type="hidden" name="OrderID" value="{{ proforma }}">
+                <input type="hidden" name="Currency" value="MYR">
+                <input type="hidden" name="TransactionType" value="SALE">
+                <input type="hidden" name="ClientRef0" value="">
+                <input type="hidden" name="ClientRef1" value="">
+                <input type="hidden" name="ClientRef2" value="">
+                <input type="hidden" name="ClientRef3" value="">
+                <input type="hidden" name="ClientRef4" value="">
+                <div class="form-group">
+                  <label for="">Amount (MYR)</label>
+                  <input type="text" name="Amount" value="{{ amount }}" readonly required>
+                </div>
+                <div class="form-group">
+                  <label for="">Customer Name</label>
+                  <input type="text" name="CustomerName" value="{{ user.name }}" readonly required>
+                </div>
+                <div class="form-group">
+                  <label for="">Customer Email</label>
+                  <input type="text" name="CustomerEmail" value="{{ user.email }}" readonly required>
+                </div>
+                <div class="form-group">
+                  <label for="">Customer Phone Number</label>
+                  <input type="text" name="CustomerPhoneNo" value="{{ user.hp_no }}" readonly required>
+                </div>
+                <div class="text-right">
+                  <button type="submit" class="btn btn-primary text-right">Pay</button>
+                </div>
+              </form>
+              {% else %}
+                <p>Problem with creating proforma. Please try again later</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endif %}
+      {% if mode == 'payment_response' %}
+        <div class="col-lg-12">
+          <div class="card">
+            <div class="card-header text-center">
+              <h2 class="mb-0">Payment Status</h2>
+            </div>
+            <div class="card-body text-center">
+              {% if payment %}
+                {% if payment.payment_status == 1 %}
+                  <h4 class="mb-0">SUCCESS</h4>
+                  {% if receipt_url %}
+                    <a href="{{ receipt_url }}" class="btn btn-sm btn-primary" target="_blank">Download Receipt</a>
+                  {% endif %}
+                {% elif payment.payment_status == 2 %}
+                  <h4 class="mb-0">PENDING</h4>
+                {% else %}
+                  <h4 class="mb-0">FAIL</h4>
+                {% endif %}
+                <hr>
+                <p>{% if payment.payment_status != 1 %}<strong>Description:</strong>{{ payment.status_description }}{% endif %}</p>
+                <p><strong>Receipt Number:</strong>{{ payment.receipt_number }}</p>
+                <p><strong>Transaction Date:</strong>{{ payment.payment_date }}</p>
+                <div class="text-center">
+                  <a href="{% url 'dashboard_joined_training_certificate' %}" class="btn btn-primary">Return to Training Certificates</a>
+                </div>
+              {% else %}
+                <h4>Problem with transaction. Please contact our staff for verifying the transaction.</h4>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+
+  </div>
+  {% include 'includes/footer-dashboard.html' %}
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <script src="/static/assets/vendor/chart.js/dist/Chart.min.js"></script>
+  <script src="/static/assets/vendor/chart.js/dist/Chart.extension.js"></script>
+
+{% endblock javascripts %}

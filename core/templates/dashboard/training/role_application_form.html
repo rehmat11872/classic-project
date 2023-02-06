@@ -1,0 +1,549 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard - {% if review %}Review{% else %}New{% endif %} Trainer Application {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+
+  <!-- Header -->
+  <div class="header bg-primary pb-6">
+    <div class="container-fluid">
+      <div class="header-body">
+        <div class="row align-items-center py-4">
+          <div class="col-lg-6 col-7">
+            <h6 class="h2 text-white d-inline-block mb-0">CIDB</h6>
+            <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+              <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboards</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{% if review %}Review{% else %}New{% endif %} Trainer Application</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+        <!-- Card stats -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Page content -->
+  <div class="container-fluid mt--6">
+    <div class="row">
+      <!-- Form Navigation -->
+      <div class="col-lg-4">
+        <div class="card">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item {% if mode == "step-1" %}text-white bg-default{% endif %}">
+              <a href="{% if review %}{% url 'dashboard_training_role_application_review' id  'step-1' %}{% else %}{% url 'dashboard_training_application_new' application_type 'step-1' %}{% endif %}" class="{% if mode == "step-1" %}text-white{% else %}text-muted{% endif %}">1. APPLICANT INFORMATION</a>
+            </li>
+            <li class="list-group-item {% if mode == "step-2" %}text-white bg-default{% endif %}">
+              <a href="{% if review %}{% url 'dashboard_training_role_application_review' id  'step-2' %}{% else %}{% url 'dashboard_training_application_new' application_type 'step-2' %}{% endif %}" class="{% if mode == "step-2" %}text-white{% else %}text-muted{% endif %}">2. ACADEMIC INFORMATION</a>
+            </li>
+            <li class="list-group-item {% if mode == "step-3" %}text-white bg-default{% endif %}">
+              <a href="{% if review %}{% url 'dashboard_training_role_application_review' id  'step-3' %}{% else %}{% url 'dashboard_training_application_new' application_type 'step-3' %}{% endif %}" class="{% if mode == "step-3" %}text-white{% else %}text-muted{% endif %}">3. WORK EXPERIENCE</a>
+            </li>
+            <li class="list-group-item {% if mode == "step-4" %}text-white bg-default{% endif %}">
+              <a href="{% if review %}{% url 'dashboard_training_role_application_review' id  'step-4' %}{% else %}{% url 'dashboard_training_application_new' application_type 'step-4' %}{% endif %}" class="{% if mode == "step-4" %}text-white{% else %}text-muted{% endif %}">4. JOINED TRAINING</a>
+            </li>
+            <li class="list-group-item {% if mode == "step-5" %}text-white bg-default{% endif %}">
+              <a href="{% if review %}{% url 'dashboard_training_role_application_review' id  'step-5' %}{% else %}{% url 'dashboard_training_application_new' application_type 'step-5' %}{% endif %}" class="{% if mode == "step-5" %}text-white{% else %}text-muted{% endif %}">5. SUPPORTING DOCUMENTS</a>
+            </li>
+          </ul>
+        </div>
+        {% if review %}
+        <!-- Form Review -->
+        <div class="card">
+          <div class="card-header text-center">
+            <h2 class="mb-0">For CIDB Reviewer</h2>
+          </div>
+          <div class="card-body">
+            <p class="mb-0"><strong>Current Status: </strong>{{ application.get_application_status_display }}</p>
+            <p><strong>Updated Date: </strong>{{ application.modified_date }}</p>
+            <a href="#" class="btn btn-primary mb-2" data-toggle="modal" data-target="#modal_interview">Invite for Interview</a>
+            <a href="#" class="btn btn-primary mb-2" data-toggle="modal" data-target="#modal_reject">Send Rejection Letter</a>
+            <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal_accreditation">Send Accreditation Letter</a>
+                    
+            <!-- Modal Interview Invitation -->
+            <form action="" method="POST">
+              {% csrf_token %}
+              <div class="modal fade" id="modal_interview" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">Invite for Interview</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <p class="mb-0">Are you sure you want to invite the applicant for interview session?</p>
+                      <div class="form-group">
+                        <label>Date*</label>
+                        <input type="text" name="interview_date" class="form-control dateinput">
+                      </div>
+                      <div class="form-group">
+                        <label>Time (From)*</label>
+                        <input type="text" name="interview_time_from" class="form-control timeinput" required>
+                      </div>
+                      <div class="form-group">
+                        <label>Time (To)*</label>
+                        <input type="text" name="interview_time_to" class="form-control timeinput" required>
+                      </div>
+                      <div class="form-group">
+                        <label>Venue*</label>
+                        <input type="text" name="interview_location" class="form-control" required>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <div class="d-flex" style="place-items:center;">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" name="interview" class="btn btn-primary">Send</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+            <!-- Modal Reject -->
+            <form action="" method="POST">
+              {% csrf_token %}
+              <div class="modal fade" id="modal_reject" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">Reject Application</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <p class="mb-0">Are you sure you want to reject the applicant?</p>
+                    </div>
+                    <div class="modal-footer">
+                      <div class="d-flex" style="place-items:center;">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" name="reject" class="btn btn-primary">Send</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+            <!-- Modal Accreditation -->
+            <form action="" method="POST">
+              {% csrf_token %}
+              <div class="modal fade" id="modal_accreditation" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">Send Accreditation</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <p class="mb-0">Are you sure you want to send accreditation to the applicant?</p>
+                      {% if application.application_type == 'trainer' %}
+                        <h2>Accreditation Period</h2>
+                        <div class="form-group">
+                          <label>Year*</label>
+                          <input type="text" name="accreditation_duration_month" class="form-control number-input" required>
+                        </div>
+                        <div class="form-group">
+                          <label>Month*</label>
+                          <input type="text" name="accreditation_duration_year" class="form-control number-input" required>
+                        </div>
+                      {% endif %}
+                    </div>
+                    <div class="modal-footer">
+                      <div class="d-flex" style="place-items:center;">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" name="accreditation" class="btn btn-primary">Send</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+      <!-- Form Section -->
+      <div class="col-lg-8">
+        <div class="card">
+          <div class="card-header text-center">
+            <h2 class="mb-0">{% if not review %}New{% else %}Information of{% endif %} 
+            {% if application.application_type == 'trainer' %}
+              Trainer
+            {% elif application.application_type == 'qca' %}
+              QLASSIC CIDB Assesssor
+            {% else %}
+              None
+            {% endif %}
+            Application</h2>
+          </div>
+          <!-- Step 1 -->
+          {% if mode == "step-1" %}
+            <div class="card-body">
+              <form action="" method="POST" enctype="multipart/form-data"> 
+                {% csrf_token %}
+                <h3 class="mt-3">APPLICANT INFORMATION</h3>
+                <hr class="my-1">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="form-control-label" for="input_title">Name</label>
+                      <input type="text" name="name" class="form-control" id="input_title" value="{{ application.user.name }}" required readonly>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="form-control-label" for="input_title">IC Number</label>
+                      <input type="text" name="icno" class="form-control" id="input_title" value="{{ application.user.icno }}" required readonly>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="form-control-label" for="input_title">Gender</label>
+                      <input type="text" name="gender" class="form-control" id="input_title" value="{{ application.user.get_gender_display }}" required readonly>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="form-control-label" for="input_title">Marital Status</label>
+                      <input type="text" name="gender" class="form-control" id="input_title" value="{{ application.user.get_marital_status_display }}" required readonly>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="form-control-label" for="input_title">Address 1</label>
+                      <input type="text" name="address1" class="form-control" id="input_title" value="{{ application.user.address1 }}" required readonly>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="form-control-label" for="input_title">Address 2</label>
+                      <input type="text" name="address2" class="form-control" id="input_title" value="{{ application.user.address2 }}" required readonly>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label class="form-control-label" for="input_title">City</label>
+                      <input type="text" name="city" class="form-control" id="input_title" value="{{ application.user.city }}" required readonly>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label class="form-control-label">State</label>
+                      <input type="text" name="state" class="form-control" id="input_title" value="{{ application.user.get_state_display }}" required readonly>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label class="form-control-label" for="input_title">Postal Code</label>
+                      <input type="text" name="postcode" class="form-control" id="input_title" value="{{ application.user.postcode }}" required readonly>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="form-control-label" for="input_title">Email</label>
+                      <input type="email" name="email" class="form-control" id="input_title" value="{{ application.user.email }}" required readonly>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="form-group">
+                      <label class="form-control-label" for="input_title">Contact No</label>
+                      <input type="text" name="hp_no" class="form-control" id="input_title" value="{{ application.user.hp_no }}" required readonly>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="form-group">
+                      <label class="form-control-label" for="input_title">Fax No</label>
+                      <input type="text" name="fax_no" class="form-control" id="input_title" value="{{ application.user.fax_no }}" required readonly>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="form-control-label">Created date</label>
+                      <input type="text" name="assessment_date" value="{% now 'd/m/Y' %}" class="dateinput form-control" required="" id="id_proposed_date" readonly>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="form-group">
+                      <label class="form-control-label" for="input_title">Application Status</label>
+                      <input type="text" name="fax_no" class="form-control" id="input_title" value="Pending" readonly>
+                    </div>
+                  </div>
+                </div>
+                <hr>
+                <div class="w-100 text-center">
+                  {% if review %}
+                    <a href="{% url 'dashboard_training_role_application_review' id 'step-2' %}" class="btn btn-primary">Next</a>
+                  {% else %}
+                    <a href="{% url 'dashboard_training_application_new' application_type 'step-2' %}" class="btn btn-primary">Next</a>
+                  {% endif %}
+                </div>
+              </form>
+            </div>
+          {% endif %}
+
+          {% if mode == "step-2" %}
+            <div class="card-body">
+              <form action="" method="POST" enctype="multipart/form-data"> 
+                {% csrf_token %}
+                <h3 class="mt-3">ACADEMIC INFORMATION</h3>
+                <hr class="my-1">
+                <table class="table">
+                  <thead class="thead-light">
+                    <tr>
+                      <th>Year</th>
+                      <th>Institution</th>
+                      <th>Program</th>
+                      <th>Qualification</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for aq in academic_qualifications %}
+                    <tr>
+                      <th>{{ aq.year }}</th>
+                      <td>{{ aq.institution }}</td>
+                      <td>{{ aq.program }}</td>
+                      <td>{{ aq.get_qualification_display }}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+                <hr>
+                <div class="w-100 text-center">
+                  {% if review %}
+                    <a href="{% url 'dashboard_training_role_application_review' id 'step-1' %}" class="btn btn-secondary">Previous</a>
+                    <a href="{% url 'dashboard_training_role_application_review' id 'step-3' %}" class="btn btn-primary">Next</a>
+                  {% else %}
+                    <a href="{% url 'dashboard_training_application_new' application_type 'step-1' %}" class="btn btn-secondary">Previous</a>
+                    <a href="{% url 'dashboard_training_application_new' application_type 'step-3' %}" class="btn btn-primary">Next</a>
+                  {% endif %}
+                </div>
+              </form>
+            </div>
+          {% endif %}
+
+          {% if mode == "step-3" %}
+            <div class="card-body">
+              <form action="" method="POST" enctype="multipart/form-data"> 
+                {% csrf_token %}
+                <h3 class="mt-3">WORK EXPERIENCE INFORMATION</h3>
+                <hr class="my-1">
+                <table class="table">
+                  <thead class="thead-light">
+                    <tr>
+                      <th>Position</th>
+                      <th>Company</th>
+                      <th>Year Start</th>
+                      <th>Year End</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for we in work_experiences %}
+                    <tr>
+                      <th>{{ we.position }}</th>
+                      <td>{{ we.company }}</td>
+                      <td>{{ we.year_from }}</td>
+                      <td>{{ we.year_to }}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+                <hr>
+                <div class="w-100 text-center">
+                  {% if review %}
+                    <a href="{% url 'dashboard_training_role_application_review' id 'step-2' %}" class="btn btn-secondary">Previous</a>
+                    <a href="{% url 'dashboard_training_role_application_review' id 'step-4' %}" class="btn btn-primary">Next</a>
+                  {% else %}
+                    <a href="{% url 'dashboard_training_application_new' application_type 'step-2' %}" class="btn btn-secondary">Previous</a>
+                    <a href="{% url 'dashboard_training_application_new' application_type 'step-4' %}" class="btn btn-primary">Next</a>
+                  {% endif %}
+                </div>
+              </form>
+            </div>
+          {% endif %}
+
+          {% if mode == "step-4" %}
+            <div class="card-body">
+              <form action="" method="POST" enctype="multipart/form-data"> 
+                {% csrf_token %}
+                <h3 class="mt-3">JOINED TRAINING (FROM QLASSIC SYSTEM)</h3>
+                <hr class="my-1">
+                <table class="table">
+                  <thead class="thead-light">
+                    <tr>
+                      <th>Training Name</th>
+                      <th>Module</th>
+                      <th>From</th>
+                      <th>To</th>
+                      <th>Attendance</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for rt in registration_trainings %}
+                    <tr>
+                      <th>{{ rt.training.training_name }}</th>
+                      <td>{{ rt.training.training_type }}</td>
+                      <td>{{ rt.from_date|date:'d M Y' }}</td>
+                      <td>{{ rt.to_date|date:'d M Y' }}</td>
+                      <td>{{ rt.get_attendance_full_display }}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+                <hr>
+              </form>
+              
+                <h3 class="mt-3">JOINED TRAINING (OTHERS)</h3>
+                <hr class="my-1">
+                <table class="table">
+                  <thead class="thead-light">
+                    <tr>
+                      <th>Year</th>
+                      <th>Course</th>
+                      <th>Place</th>
+                      {% if not review %}<th>Action</th>{% endif %}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for jt in joined_trainings %}
+                    <tr>
+                    <form action="" method="POST"> 
+                      {% csrf_token %}
+                      <input type="hidden" name='id' value='{{ jt.id }}'>
+                      <th>{{ jt.year }}</th>
+                      <td>{{ jt.course }}</td>
+                      <td>{{ jt.place }}</td>
+                      {% if not review %}
+                      <td><button type='submit' name='delete' class="btn btn-sm btn-danger">Delete</button></td>
+                      {% endif %}
+                    </form>
+                    </tr>
+                    {% endfor %}
+                    {% if not review %}
+                    <tr>
+                    <form action="" method="POST"> 
+                      {% csrf_token %}
+                      <th><input type="text" class='form-control form-control-sm number-input' name='year' required></th>
+                      <td><input type="text" class='form-control form-control-sm' name='course' required></td>
+                      <td><input type="text" class='form-control form-control-sm' name='place' required></td>
+                      <td><button type='submit' name='add' class="btn btn-sm btn-info">Add</button></td>
+                    </form>
+                    <tr>
+                    {% endif %}
+                  </tbody>
+                </table>
+                <hr>
+              <div class="w-100 text-center">
+                {% if review %}
+                  <a href="{% url 'dashboard_training_role_application_review' id 'step-3' %}" class="btn btn-secondary">Previous</a>
+                  <a href="{% url 'dashboard_training_role_application_review' id 'step-5' %}" class="btn btn-primary">Next</a>
+                {% else %}
+                  <a href="{% url 'dashboard_training_application_new' application_type 'step-3' %}" class="btn btn-secondary">Previous</a>
+                  <a href="{% url 'dashboard_training_application_new' application_type 'step-5' %}" class="btn btn-primary">Next</a>
+                {% endif %}
+              </div>
+            </div>
+          {% endif %}
+
+          {% if mode == "step-5" %}
+            <div class="card-body">
+              <form action="" method="POST" enctype="multipart/form-data"> 
+                {% csrf_token %}
+                <h3 class="mt-3">SUPPORTING DOCUMENTS</h3>
+                <hr class="my-1">
+                {% for sd in supporting_documents.sds %}
+                  <div class="form-group">
+                    <label class="form-control-label">{{ sd.title }} {% if sd.required %}*{% endif %}</label class="form-control-label">
+                    {% if sd.sd.file %}
+                      <p class="mb-1">Current: <a href="{{ sd.sd.file.url }}">Download</a></p>
+                    {% else %}
+                      <p class="mb-1">Current: None</p>
+                    {% endif %}
+                    {% if not review %}
+                    <input type="file" class="form-control" name="{{ sd.sd.file_name }}" {% if sd.required %}{% if not sd.sd.file %}required{% endif %}{% endif %}>
+                    {% endif %}
+                  </div>
+                {% endfor %}
+                <hr>
+                <div class="w-100 text-center">
+                  {% if review %}
+                    <a href="{% url 'dashboard_training_role_application_review' id 'step-4' %}" class="btn btn-secondary">Previous</a>
+                  {% else %}
+                    <a href="{% url 'dashboard_training_application_new' application_type 'step-4' %}" class="btn btn-secondary">Previous</a>
+                    <button type="submit" name="save" class="btn btn-danger">Save</button>
+                    <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal_confirmation">Submit Application</a>
+                    
+                    <!-- Modal Confirmation -->
+                    <div class="modal fade" id="modal_confirmation" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                      <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Disclaimer Message</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            <p class="mb-0">
+                              Perakuan (Sila tandakan ✓ pada kotak)
+                              <br><br>Saya / Kami telah baca, memahami dan bersetuju dengan TERMA DAN SYARAT PERMOHONAN SEBAGAI <em>{% if application_type == 'qca' %}QLASSIC CIDB ASSESSOR (QCA){% elif application_type == 'trainer' %}TRAINER{% else%}{% endif %}</em>. Saya / Kami dengan sesungguhnya mengakui dan mengesahkan bahawa maklumat yang diberikan di dalam borang permohonan ini dan segala salinan dokumen yang disertakan bersamanya adalah benar. Saya / Kami dengan ini mengesahkan bahawa saya / kami akan mematuhi semua kehendak dan ketetapan yang di nyatakan dalam Kod Etika Kontraktor CIDB (“Kod Etika”). Saya / kami juga memahami bahawa jika saya / kami gagal mematuhi Kod Etika ini, saya / kami boleh dikenakan tindakan tatatertib oleh CIDB.
+                              <br><br><br>Declaration (Please ✓ on the box)
+                              <br><br>I /We have read, understood and agreed with the TERMS AND CONDITIONS OF {% if application_type == 'qca' %}QLASSIC CIDB ASSESSOR (QCA){% elif application_type == 'trainer' %}TRAINER{% else%}{% endif %} APPLICATION. I / We solemnly declare and confirm that the information given, and copies of documents submitted together with this application are true and correct. I / We hereby certify that I / we will comply with all requirements and stipulations specified in the CIDB Code of Ethics for Contractors (“Code of Ethics”). I / we may be subject to disciplinary action by CIDB if I / we failed to obey to this Code of Ethics.
+                            </p>
+                          </div>
+                          <div class="modal-footer">
+                            <div class="form-check mr-2">
+                              <label class="form-check-label mr-4" for="exampleCheck1">I agree the terms and conditions given</label>
+                              <input type="checkbox" class="form-check-input" id="agree_checkbox" onchange="check_agree()">
+                            </div>
+                            <div class="d-flex" style="place-items:center;">
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                              <button type="submit" name="submit" id="agree_button" class="btn btn-primary" disabled>Agree</button>
+                            </div>
+                            <script>
+                              function check_agree(){
+                                if ($('#agree_checkbox').prop( "checked")== true) {
+                                  $('#agree_button').prop("disabled",false);
+                                } else {
+                                  $('#agree_button').prop("disabled",true);
+                                }
+                              }
+                            </script>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  {% endif %}
+                </div>
+              </form>
+            </div>
+          {% endif %}
+
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+  {% include 'includes/footer-dashboard.html' %}
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <script src="/static/assets/vendor/chart.js/dist/Chart.min.js"></script>
+  <script src="/static/assets/vendor/chart.js/dist/Chart.extension.js"></script>
+
+{% endblock javascripts %}

@@ -1,0 +1,252 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard - New QLASSIC Application {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+
+  <!-- Header -->
+  <div class="header bg-primary pb-6">
+    <div class="container-fluid">
+      <div class="header-body">
+        <div class="row align-items-center py-4">
+          <div class="col-lg-6 col-7">
+            <h6 class="h2 text-white d-inline-block mb-0">CIDB</h6>
+            <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+              <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboards</a></li>
+                <li class="breadcrumb-item active" aria-current="page">New QLASSIC Application</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+        <!-- Card stats -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Page content -->
+  <div class="container-fluid mt--6">
+    <div class="row">
+      {% if not mode %}
+      <div class="col-lg-4">
+        <div class="card">
+          <div class="card-header text-center">
+            <h2 class="mb-0">Project</h2>
+          </div>
+          <div class="card-body text-center">
+            <h4>{{ contractor.project_title }}</h4>
+          </div>
+        </div>
+        <div class="card">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">1. APPLICANT INFORMATION</li>
+            <li class="list-group-item">2. PROJECT INFORMATION</li>
+            <li class="list-group-item text-white bg-primary">3. SUPPORTING DOCUMENTS</li>
+          </ul>
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="col-lg-8">
+        <div class="card">
+          <div class="card-header text-center">
+            <h2 class="mb-0">New QLASSIC Application</h2>
+          </div>
+          <div class="card-body">
+            <form action="" method="POST" enctype="multipart/form-data" id="form_validate" onsubmit="return lock_submit();"> 
+              {% csrf_token %}
+
+              <h3 class="mt-3">SUPPORTING DOCUMENTS</h3>
+              <h5 class="mt-3 text-red">To submit an application please ensure all information/supporting document has been completely filled/uploaded.</h5>
+              <h5 class="mt-3 text-red">Maximum upload size for each file: 20 mb.</h5>
+
+
+              <hr class="my-1">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_file">SURAT PENGESAHAN PEMILIKAN KOSONG ATAU VACANT(VP) OLEH PEMILIK PROJEK/KLIEN (Sila rujuk <a href="{% static "assets/docs/LampiranA.pdf" %}" target="_blank">lampiran A</a>)</label>
+                    {% if sd_1.file %}<p class="mb-1">Current: <a href="{{ sd_1.file.url }}">Download</a></p>{% endif %}
+                    <input type="file" class="form-control" name="sd_1" {% if not sd_1.file %}required{% endif %}>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_file">SURAT PERAKUAN SIAP KERJA OLEH ARKITEK (Sila rujuk <a href="{% static "assets/docs/LampiranB.pdf" %}" target="_blank">lampiran B</a>)</label>
+                    {% if sd_2.file %}<p class="mb-1">Current: <a href="{{ sd_2.file.url }}">Download</a></p>{% endif %}
+                    <input type="file" class="form-control" name="sd_2" {% if not sd_2.file %}required{% endif %}>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_file">SURAT PENGESAHAN OLEH ARKITEK (Sila rujuk <a href="{% static "assets/docs/LampiranC.pdf" %}" target="_blank">lampiran C</a>)</label>
+                    {% if sd_3.file %}<p class="mb-1">Current: <a href="{{ sd_3.file.url }}">Download</a></p>{% endif %}
+                    <input type="file" class="form-control" name="sd_3" {% if not sd_3.file %}required{% endif %}>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_file">SALINAN SURAT TAWARAN PROJEK/PROJECTS LETTER OF AWARD</label>
+                    {% if sd_4.file %}<p class="mb-1">Current: <a href="{{ sd_4.file.url }}">Download</a></p>{% endif %}
+                    <input type="file" class="form-control" name="sd_4" {% if not sd_4.file %}required{% endif %}>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_file">SALINAN PELAN LOKASI TAPAK/SITE LOCATION MAP</label>
+                    {% if sd_5.file %}<p class="mb-1">Current: <a href="{{ sd_5.file.url }}">Download</a></p>{% endif %}
+                    <input type="file" class="form-control" name="sd_5" {% if not sd_5.file %}required{% endif %}>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_file">SALINAN PROJECT LAYOUT</label>
+                    {% if sd_6.file %}<p class="mb-1">Current: <a href="{{ sd_6.file.url }}">Download</a></p>{% endif %}
+                    <input type="file" class="form-control" name="sd_6" {% if not sd_6.file %}required{% endif %}>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_file">SALINAN FLOOR PLAN</label>
+                    {% if sd_7.file %}<p class="mb-1">Current: <a href="{{ sd_7.file.url }}">Download</a></p>{% endif %}
+                    <input type="file" class="form-control" name="sd_7" {% if not sd_7.file %}required{% endif %}>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_file">SALINAN EXTERNAL WORKS LAYOUT PLAN (Jika berkenaan)</label>
+                    {% if sd_8.file %}<p class="mb-1">Current: <a href="{{ sd_8.file.url }}">Download</a></p>{% endif %}
+                    <input type="file" class="form-control" name="sd_8" {% if not sd_8.file %}required{% endif %}>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_file">SURAT PERAKUAN (Sila rujuk <a href="{% static "assets/docs/LampiranD.pdf" %}" target="_blank">lampiran D</a>)</label>
+                    {% if sd_9.file %}<p class="mb-1">Current: <a href="{{ sd_9.file.url }}">Download</a></p>{% endif %}
+                    <input type="file" class="form-control" name="sd_9" {% if not sd_9.file %}required{% endif %}>
+                  </div>
+                </div>
+              </div>
+              <a href="{% url 'dashboard_application_new_2' contractor.contractor_registration_number contractor.project_reference_number %}" class="btn btn-primary">Previous</a>
+              <a href="#" class="btn btn-primary" onclick="CheckValidation();">Submit Application</a>
+              <script>
+                function CheckValidation(){
+                    var frmvalid = $("#form_validate");
+                    frmvalid.validate();
+                    if (!frmvalid.valid()) {
+                        return false;
+                    } else {
+                      $('#modal_confirmation').modal('show');
+                    }
+                }
+              </script>
+
+              <!-- Modal Confirmation -->
+              <div class="modal fade" id="modal_confirmation" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">Disclaimer Message</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <p class="mb-0">
+                        Perakuan (Sila tandakan ✓ pada kotak)
+                        <br><br>Saya / Kami telah baca, memahami dan bersetuju dengan <a href="{% static "assets/docs/LampiranE.pdf" %}" target="_blank">TERMA DAN SYARAT</a> PERMOHONAN PENILAIAN QLASSIC. Saya / Kami dengan sesungguhnya mengakui dan mengesahkan bahawa maklumat yang diberikan di dalam borang permohonan ini dan segala salinan dokumen yang disertakan bersamanya adalah benar. Saya / Kami dengan ini mengesahkan bahawa saya / kami akan mematuhi semua kehendak dan ketetapan yang di nyatakan dalam Kod Etika Kontraktor CIDB (“Kod Etika”). Saya / kami juga memahami bahawa jika saya / kami gagal mematuhi Kod Etika ini, saya / kami boleh dikenakan tindakan tatatertib oleh CIDB.
+                        <br><br><br>Declaration (Please ✓ on the box)
+                        <br><br>I /We have read, understood and agreed with the <a href="{% static "assets/docs/LampiranE.pdf" %}" target="_blank">TERMS AND CONDITIONS</a> OF QLASSIC ASSESSMENT APPLICATION. I / We solemnly declare and confirm that the information given, and copies of documents submitted together with this application are true and correct. I / We hereby certify that I / we will comply with all requirements and stipulations specified in the CIDB Code of Ethics for Contractors (“Code of Ethics”). I / we may be subject to disciplinary action by CIDB if I / we failed to obey to this Code of Ethics.
+                      </p>
+                    </div>
+                    <div class="modal-footer">
+                      <div class="form-check mr-2">
+                        <label class="form-check-label mr-4" for="exampleCheck1">I agree the terms and conditions given</label>
+                        <input type="checkbox" class="form-check-input" id="agree_checkbox" onchange="check_agree()">
+                      </div>
+                      <div class="d-flex" style="place-items:center;">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" id="agree_button" class="btn btn-primary" disabled>Agree</button>
+                      </div>
+                      <script>
+                        function check_agree(){
+                          if ($('#agree_checkbox').prop( "checked")== true) {
+                            $('#agree_button').prop("disabled",false);
+                          } else {
+                            $('#agree_button').prop("disabled",true);
+                          }
+                        }
+
+                        function lock_submit(){
+                          $('#agree_button').prop("disabled",true);
+                        }
+
+
+                        
+                      </script>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      {% if mode %}
+      <div class="col-lg-4">
+        <div class="card">
+          {% if mode == 'review' %}
+          <div class="card-header text-center">
+            <h2 class="mb-0">To be filled by Reviewer</h2>
+          </div>
+          <div class="card-body">
+          </div>
+          {% endif %}
+          {% if mode == 'verify' %}
+          <div class="card-header text-center">
+            <h2 class="mb-0">To be filled by Verifier</h2>
+          </div>
+          <div class="card-body">
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+
+  </div>
+  {% include 'includes/footer-dashboard.html' %}
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <script src="/static/assets/vendor/chart.js/dist/Chart.min.js"></script>
+  <script src="/static/assets/vendor/chart.js/dist/Chart.extension.js"></script>
+
+{% endblock javascripts %}

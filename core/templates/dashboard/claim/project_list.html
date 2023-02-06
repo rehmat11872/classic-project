@@ -1,0 +1,115 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard - New Claim Application - {{ category_name }} {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+  <!-- Header -->
+  <div class="header bg-primary pb-6">
+    <div class="container-fluid">
+      <div class="header-body">
+        <div class="row align-items-center py-4">
+          <div class="col-lg-6 col-7">
+            <h6 class="h2 text-white d-inline-block mb-0">CIDB</h6>
+            <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+              <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboards</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard_claim_dashboard' role %}">Claim Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">New Claim Application - {{ category_name }}</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+        <!-- Card stats -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Page content -->
+  <div class="container-fluid mt--6">
+
+    <div class="row">
+      <div class="col-md-12">
+
+        <!-- List of Claim From Current Category -->
+        <!-- Claim List -->
+        <div class="col-md-12">
+          
+          {% if role == 'assessor' %}
+            <!-- Role Assessor -->
+            <div class="card">
+              <div class="card-header text-center">
+                <h2 class="mb-0">{{ category_name }} Claim : Select the Project</h2>
+              </div>
+              <div class="table-responsive py-4">
+                <table class="table table-custom-simplified table-flush">
+                  <thead class="thead-light">
+                    <tr>
+                      <th>Title</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for ass in assigned %}
+                    <tr>
+                      <th>{{ ass.ad.qaa.pi.project_title }}</th>
+                      <th>
+                        <a href="{% url 'dashboard_claim_application' role category ass.ad.qaa.id %}" class="btn btn-sm btn-primary">Apply</a>
+                      </th>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          {% endif %}
+          
+          {% if role == 'trainer' %}
+            <!-- Role Trainer -->
+            <div class="card">
+              <div class="card-header text-center">
+                <h2 class="mb-0">{{ category_name }} Claim : Select the Training</h2>
+              </div>
+              <div class="table-responsive py-4">
+                <table class="table table-custom-simplified table-flush">
+                  <thead class="thead-light">
+                    <tr>
+                      <th>Title</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for training in trainings %}
+                    <tr>
+                      <th>{{ training.training_name }}</th>
+                      <th>
+                        <a href="{% url 'dashboard_claim_application' role category training.id %}" class="btn btn-sm btn-primary">Apply</a>
+                      </th>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          {% endif %}
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+  {% include 'includes/footer-dashboard.html' %}
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <script src="/static/assets/vendor/chart.js/dist/Chart.min.js"></script>
+  <script src="/static/assets/vendor/chart.js/dist/Chart.extension.js"></script>
+
+{% endblock javascripts %}

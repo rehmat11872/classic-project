@@ -1,0 +1,216 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard - Project List {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% load humanize %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+  <!-- Header -->
+  <div class="header bg-primary pb-6">
+    <div class="container-fluid">
+      <div class="header-body">
+        <div class="row align-items-center py-4">
+          <div class="col-lg-6 col-7">
+            <h6 class="h2 text-white d-inline-block mb-0">CIDB</h6>
+            <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+              <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboards</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Project List</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+        <!-- Card stats -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Page content -->
+  <div class="container-fluid mt--6">
+
+    <div class="row">
+      {% if require_verification == True %}
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header text-center">
+            <h2 class="mb-0">Contractor Verification</h2>
+            <p class="mb-0">Please verify your contractor information to proceed</p>
+          </div>
+          <div class="card-body">
+            <form action="" method="POST">
+              {% csrf_token %}
+              <input type="hidden" name="created_by" value="{{ request.user.name }}">
+              <div class="form-group">
+                <label class="form-control-label" for="input_title">SSM Number</label>
+                <input type="text" name="ssm_number" class="form-control" id="input_title" required>
+              </div>
+              <div class="form-group">
+                <label class="form-control-label" for="input_title">Contractor Registration Number</label>
+                <input type="text" name="contractor_registration_number" class="form-control" id="input_title" required>
+              </div>
+              <button type="submit" name="create" class="btn btn-primary">Verify</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-8">
+      {% else %}
+      <div class="col-md-12">
+      {% endif %}
+        <div class="card">
+          <div class="card-header text-center">
+            <div class="pr-4">
+              <div class=""><p class="mb-0"><strong>SSM Number: </strong>{{ verified_contractor.ssm_number }}</p></div>
+              <div class=""><p class="mb-0"><strong>Contractor Registration Number: </strong>{{ verified_contractor.contractor_registration_number }}</p></div>
+            </div>
+          </div>
+          <div class="table-responsive py-4">
+            <h2 class="mb-4 text-center">List of Projects</h2>
+            <!-- Table Data Filter -->
+            <div class="d-flex justify-content-center" style="width:100%;">
+              <label class="mr-2 mb-0">Filter by:</label>
+              <form action="" method="GET" style="width:150px;">
+                <select name="sector" class="form-control form-control-sm" onchange="this.form.submit()">
+                    <option value="" {% if sector == '' or not sector %}selected{% endif %}>ALL</option>
+                    <option value="GOVERNMENT" {% if sector == 'GOVERNMENT' %}selected{% endif %}>GOVERNMENT</option>
+                    <option value="PRIVATE" {% if sector == 'PRIVATE' %}selected{% endif %}>PRIVATE</option>
+                </select>
+              </form>
+            
+            </div>
+            <div ><button class="ml-3 mt-5 btn btn-primary" data-toggle="modal" data-target="#modal_we">Add project</button></div>
+
+             <!-- Modal Academic Qualification -->
+    <div class="modal fade" id="modal_we" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Add Project</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <form action="{% url 'add_course' %}" method="POST">
+          {% csrf_token %}
+          <div class="modal-body">
+           {{form | crispy}}
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" name="create_aq" class="btn btn-primary">Add</button>
+          </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    
+
+
+            <table class="table table-custom-simplified table-flush">
+              <thead class="thead-light">
+                <tr>
+                  <th>Project Title</th>
+                  <th>Project Value</th>
+                  <th>Project Status</th>
+                  <th>Letter of Award Date</th>
+                  <th>Project Start Date</th>
+                  <th>Project End Date</th>
+                  <th>Client Name</th>
+                  <th>View Assesment</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for ct in contractors %}
+                <tr>
+                  <th>
+                    <form action="{% url 'update_name' ct.id %}" method="post">
+                      {% csrf_token %}
+                    <input class="form-control" id="title" name="title"  type="text" value="{{ ct.project_title|truncatechars:80 }}">
+                    <br>
+                    <button style="margin-top: 5px; font-size: small;" class="btn btn-sm btn-primary w-100 mb-2" type="submit">change title</button>
+                  </form>
+                  </th>
+                 
+                  <th>RM{{ ct.contract_value|intcomma }}</th>
+                  <th>{{ ct.project_status }}</th>
+                  <th>{{ ct.letter_of_award_date }}</th>
+                  <th>{{ ct.start_date }}</th>
+                  <th>{{ ct.dateline }}</th>
+                  <th>{{ ct.client_name }}</th>
+                  <th> <button class="btn btn-sm btn-secondary w-100 mb-2"><a href="{% url 'veiw_few_assesment' ct.id %}">View</a></button> </th>
+                  <td>
+                    {% if ct.applied == False %}
+                      <a href="{% url 'dashboard_application_new' ct.contractor_registration_number ct.project_reference_number %}" class="btn btn-sm btn-success w-100 mb-2">Apply QLASSIC</button>
+                    {% else %}
+                      <a href="#" class="btn btn-sm btn-secondary w-100 mb-2">Applied</a>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  {% include 'includes/footer-dashboard.html' %}
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <script src="/static/assets/vendor/chart.js/dist/Chart.min.js"></script>
+  <script src="/static/assets/vendor/chart.js/dist/Chart.extension.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+  <script>
+
+function myFunction() {
+  console.log('dfkjfdhj')
+}
+
+
+
+$('body').on('click', '[data-editable]', function(){
+  
+  var $el = $(this);
+              
+  var $input = $('<input/>').val( $el.text() );
+  $el.replaceWith( $input );
+
+  
+  var save = function(){
+    var $p = $('<p data-editable />').text( $input.val() );
+    $input.replaceWith( $p );
+  };
+  
+  /**
+    We're defining the callback with `one`, because we know that
+    the element will be gone just after that, and we don't want 
+    any callbacks leftovers take memory. 
+    Next time `p` turns into `input` this single callback 
+    will be applied again.
+  */
+  $input.one('blur', save).focus();
+  
+});
+
+
+
+
+
+
+  </script>
+
+{% endblock javascripts %}

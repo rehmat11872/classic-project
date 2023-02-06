@@ -1,0 +1,40 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard - Project List {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% load humanize %}
+
+{% block content %}
+
+
+<form class="m-5" method="POST">
+    {% csrf_token %}
+
+    <div class="form-group">
+        <label for="exampleInputEmail1">Full Name</label>
+        <input type="text" class="form-control" name="name" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Name">
+        <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
+      </div>
+    <div class="form-group">
+      <label for="exampleInputEmail1">Email address</label>
+      <input type="email" class="form-control" name="email" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Email">
+      <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
+    </div>
+
+    <div class="form-group">
+        <label for="exampleInputEmail1">Comment</label><br>
+        <textarea name="comment" id="" cols="127" rows="10" placeholder="Comment.."></textarea>
+        <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
+      </div>
+    
+    
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+
+  {% include 'includes/footer-dashboard.html' %}
+
+  {% endblock content %}
+  

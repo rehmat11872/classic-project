@@ -1,0 +1,293 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard - Profile {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% load crispy_forms_tags %}
+{% load widget_tweaks %}
+
+{% block content %}
+
+  <!-- Header -->
+  <div class="header bg-primary pb-6">
+    <div class="container-fluid">
+      <div class="header-body">
+        <div class="row align-items-center py-4">
+          <div class="col-lg-6 col-7">
+            <h6 class="h2 text-white d-inline-block mb-0">CIDB</h6>
+            <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+              <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboards</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Profile</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+        <!-- Card stats -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Page content -->
+  <div class="container-fluid mt--6">
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-header text-center">
+            <h2 class="mb-0">Manage Profile</h2>
+          </div>
+          <div class="card-body">
+            <div class="text-center mb-5">
+              {% if request.user.picture %}
+                <img src="{{ request.user.picture.url }}" class="img-fluid" style="width:150px;height:150px;border-radius:50%;background-size: cover;background-position: center;">
+              {% else %}
+                <img src="/static/assets/img/theme/user-default.png" class="img-fluid" style="height:150px;">
+              {% endif %}
+                <h4 class='mb-0 mt-3'>{{ request.user.name }}</h4>
+                <h5 class="mb-3">{{ request.user.get_role_display }}</h5>
+            </div>
+            {% for error in form_user.errors %}
+              {{ error }}
+            {% endfor %}
+            <form action="" method="POST" enctype="multipart/form-data"> 
+              {% csrf_token %}
+                <div class="row">
+                  <div class="col-sm-12">
+                    <h2>User Information</h2>
+                    <div class="form-group">
+                      <label for="input_title">Email</label>
+                      <input type="text" class="form-control" id="input_title" value="{{ request.user.email }}" readonly>
+                    </div>
+                  </div>
+                  <div class="col-sm-12">
+                    <div class="form-group">
+                      <label>IC Number*</label>
+                      {% render_field form_user.icno class+="form-control ic-input" maxlength="12" %}
+                    </div>
+                  </div>
+                  <div class="col-sm-12">
+                    <div class="form-group">
+                      <label>Full Name*</label>
+                      {% render_field form_user.name class+="form-control character-input" %}
+                    </div>
+                  </div>
+                  <div class="col-sm-6">
+                    {{ form_user.gender|as_crispy_field }}
+                  </div>
+                  <div class="col-sm-6">
+                    {{ form_user.marital_status|as_crispy_field }}
+                  </div>
+                  <div class="col-sm-6">
+                    {{ form_user.greencard_no|as_crispy_field }}
+                  </div>
+                  <div class="col-sm-6">
+                    {{ form_user.greencard_exp_date|as_crispy_field }}
+                  </div>
+                  <div class="col-sm-12">
+                    {{ form_user.organization|as_crispy_field }}
+                  </div>
+                  <div class="col-sm-12">
+                    {{ form_user.position|as_crispy_field }}
+                  </div>
+                  <div class="col-sm-12">
+                    {{ form_user.address1|as_crispy_field }}
+                  </div>
+                  <div class="col-sm-12">
+                    {{ form_user.address2|as_crispy_field }}
+                  </div>
+                  <div class="col-sm-6">
+                    <div class="form-group">
+                      <label>Postal Code*</label>
+                      {% render_field form_user.postcode class+="form-control number-input" %}
+                    </div>
+                  </div>
+                  <div class="col-sm-6">
+                    {{ form_user.city|as_crispy_field }}
+                  </div>
+                  <div class="col-sm-6">
+                    {{ form_user.state|as_crispy_field }}
+                  </div>
+                  <div class="col-sm-6">
+                    <div class="form-group">
+                      <label>Office Number*</label>
+                      {% render_field form_user.office_no class+="form-control phone-input" %}
+                    </div>
+                  </div>
+                  <div class="col-sm-6">
+                    <div class="form-group">
+                      <label>Phone Number*</label>
+                      {% render_field form_user.hp_no class+="form-control phone-input" %}
+                    </div>
+                  </div>
+                  <div class="col-sm-6">
+                    <div class="form-group">
+                      <label>Fax Number*</label>
+                      {% render_field form_user.fax_no class+="form-control phone-input" %}
+                    </div>
+                  </div>
+                  {% if request.user.role != 'contractor' and request.user.role != 'applicant' %}
+                  <div class="col-sm-12">
+                    {{ form_user.picture|as_crispy_field }}
+                  </div>
+                  {% endif %}
+                  {% if request.user.is_assessor or request.user.is_trainer %}
+                  <div class="col-sm-12">
+                    <hr>
+                    <h2 class="pb-0 mb-0">Transport Information</h2>
+                    <p><small>(For Claim Purpose)</small></p>
+                    {{ form_user.transport_model|as_crispy_field }}
+                  </div>
+                  <div class="col-sm-12">
+                    {{ form_user.transport_cc|as_crispy_field }}
+                  </div>
+                  <div class="col-sm-12">
+                    {{ form_user.transport_registration_number|as_crispy_field }}
+                  </div>
+                  {% endif %}
+                </div>
+              <button type="submit" name="update" class="btn btn-primary">Save</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card">
+              <div class="card-header text-center">
+                <h2 class="mb-0">Academic Qualification</h2>
+              </div>
+              <div class="table-responsive py-4">
+                <table class="table table-custom-simplified table-flush">
+                  <thead class="thead-light">
+                    <tr>
+                      <th>Year</th>
+                      <th>Institution</th>
+                      <th>Program</th>
+                      <th>Qualification</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for aq in academic_qualifications %}
+                    <tr>
+                      <th>{{ aq.year }}</th>
+                      <td>{{ aq.institution }}</td>
+                      <td>{{ aq.program }}</td>
+                      <td>{{ aq.get_qualification_display }}</td>
+                      <td>
+                        <a href="{% url 'dashboard_profile_academic_qualification' aq.id %}" class="btn btn-sm btn-info w-100 mb-2">Edit</button>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              <div class="text-center card-footer">
+                <a href="#" class="btn btn-sm btn-info w-100 mb-2" data-toggle="modal" data-target="#modal_aq">Add New</a>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="card">
+              <div class="card-header text-center">
+                <h2 class="mb-0">Work Experience</h2>
+              </div>
+              <div class="table-responsive py-4">
+                <table class="table table-custom-simplified table-flush">
+                  <thead class="thead-light">
+                    <tr>
+                      <th>Position</th>
+                      <th>Company</th>
+                      <th>Year Start</th>
+                      <th>Year End</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for we in work_experiences %}
+                    <tr>
+                      <th>{{ we.position }}</th>
+                      <td>{{ we.company }}</td>
+                      <td>{{ we.year_from }}</td>
+                      <td>{{ we.year_to }}</td>
+                      <td>
+                        <a href="{% url 'dashboard_profile_work_experience' we.id %}" class="btn btn-sm btn-info w-100 mb-2">Edit</button>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              <div class="text-center card-footer">
+                <a href="#" class="btn btn-sm btn-info w-100 mb-2" data-toggle="modal" data-target="#modal_we">Add New</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Work Experience -->
+    <div class="modal fade" id="modal_we" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Add Work Experience</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <form action="" method="POST">
+          {% csrf_token %}
+          <div class="modal-body">
+            {{ form_we|crispy }}
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" name="create_we" class="btn btn-primary">Add</button>
+          </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Academic Qualification -->
+    <div class="modal fade" id="modal_aq" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Add Academic Qualification</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <form action="" method="POST">
+          {% csrf_token %}
+          <div class="modal-body">
+            {{ form_aq|crispy }}
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" name="create_aq" class="btn btn-primary">Add</button>
+          </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  {% include 'includes/footer-dashboard.html' %}
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <script src="/static/assets/vendor/chart.js/dist/Chart.min.js"></script>
+  <script src="/static/assets/vendor/chart.js/dist/Chart.extension.js"></script>
+
+{% endblock javascripts %}

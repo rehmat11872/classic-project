@@ -1,0 +1,215 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard - Claim Dashboard {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+  <!-- Header -->
+  <div class="header bg-primary pb-6">
+    <div class="container-fluid">
+      <div class="header-body">
+        <div class="row align-items-center py-4">
+          <div class="col-lg-6 col-7">
+            <h6 class="h2 text-white d-inline-block mb-0">CIDB</h6>
+            <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+              <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboards</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Claim Dashboard</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+        <!-- Card stats -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Page content -->
+  <div class="container-fluid mt--6">
+
+    <div class="row">
+      <!-- User Information -->
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-header text-center">
+            <h2 class="mb-0">My Information</h2>
+            <p class="text-muted text-center">Role : {{ request.user.get_role_display }}</p>
+          </div>
+          <div class="card-body">
+                <fieldset disabled>
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_title">Name</label>
+                    <input type="text" name="" class="form-control" id="input_title" value="{{ request.user.name }}" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_title">IC Number</label>
+                    <input type="text" name="" class="form-control" id="input_title" placeholder="eg. 910101223333" value="{{ request.user.icno }}" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_announcement">Email</label>
+                    <input type="text" name="" class="form-control" id="input_title" value="{{ request.user.email }}" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_announcement">Contact Number</label>
+                    <input type="text" name="" class="form-control" id="input_title" value="{{ request.user.hp_no }}" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_title">Home Address</label>
+                    <input type="text" name="" class="form-control" id="input_title" value="{{ request.user.address1 }}, {{ request.user.address2 }}, {{ request.user.postcode }}, {{ request.user.city }}, {{ request.user.state }}" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_title">Office Address</label>
+                    <input type="text" name="" class="form-control" id="input_title" required>
+                  </div>
+                </fieldset>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transport Information -->
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-header text-center">
+            <h2 class="mb-0">Transportation Info</h2>
+          </div>
+          <div class="card-body">
+              <form action="" method="POST">
+                {% csrf_token %}
+                <fieldset>
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_title">Model</label>
+                    <input type="text" name="transport_model" class="form-control" id="input_title" value="{% if request.user.transport_model %}{{ request.user.transport_model }}{% endif %}" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_title">CC</label>
+                    <input type="text" name="transport_cc" class="form-control decimal-input" id="input_title" value="{{ request.user.transport_cc }}" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_announcement">Registration Number</label>
+                    <input type="text" name="transport_registration_number" class="form-control" id="input_title" value="{% if request.user.transport_registration_number %}{{ request.user.transport_registration_number }}{% endif %}" required>
+                  </div>
+                  <button type="submit" class="btn btn-info" name='transport'>Save</button>
+                </fieldset>
+              </form>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header text-center">
+            <h2 class="mb-0">New Claim</h2>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6 mb-2">
+                <a href="{% url 'dashboard_claim_project_list' role 'mileage' %}" class="btn btn-primary w-100">Mileage</a>
+              </div>
+              <div class="col-md-6 mb-2">
+                <a href="{% url 'dashboard_claim_project_list' role 'fi' %}" class="btn btn-primary w-100">FI</a>
+              </div>
+              <div class="col-md-6 mb-2">
+                <a href="{% url 'dashboard_claim_project_list' role 'public_transport' %}" class="btn btn-primary w-100">Public Transport</a>
+              </div>
+              <div class="col-md-6 mb-2">
+                <a href="{% url 'dashboard_claim_project_list' role 'accommodation' %}" class="btn btn-primary w-100">Accommodation</a>
+              </div>
+              <div class="col-md-6 mb-2">
+                <a href="{% url 'dashboard_claim_project_list' role 'others' %}" class="btn btn-primary w-100">Others</a>
+              </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Claim List -->
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header text-center">
+            <h2 class="mb-0">Claim Lists</h2>
+          </div>
+          <div class="table-responsive py-4">
+            {% if role == 'assessor' %}
+            <table class="table table-custom-simplified table-flush">
+              <thead class="thead-light">
+                <tr>
+                  <th>ID</th>
+                  <th>Project</th>
+                  <th>Category</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Applied Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for claim in claims %}
+                <tr>
+                  <th>{{ claim.code_id }}</th>
+                  <th>{{ claim.qaa.pi.project_title|truncatechars:100 }}</th>
+                  <th>{{ claim.get_claim_category_display }}</th>
+                  <th>{% if claim.total_receipt_amount %}RM {{ claim.total_receipt_amount }}{% endif %}</th>
+                  <td>
+                    {% if claim.claim_status == 'approved' %}Approved
+                    {% else %}Pending
+                    {% endif %}
+                  </td>
+                  <td>{{ claim.created_date }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            {% endif %}
+
+            {% if role == 'trainer' %}
+            <table class="table table-custom-simplified table-flush">
+              <thead class="thead-light">
+                <tr>
+                  <th>ID</th>
+                  <th>Training</th>
+                  <th>Category</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Applied Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for claim in claims %}
+                <tr>
+                  <th>{{ claim.code_id }}</th>
+                  <th>{{ claim.training.training_name|truncatechars:100 }}</th>
+                  <th>{{ claim.get_claim_category_display }}</th>
+                  <th>{% if claim.total_receipt_amount %}RM {{ claim.total_receipt_amount }}{% endif %}</th>
+                  <td>
+                    {% if claim.claim_status == 'approved' %}Approved
+                    {% else %}Pending
+                    {% endif %}
+                  </td>
+                  <td>{{ claim.created_date }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+  {% include 'includes/footer-dashboard.html' %}
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <script src="/static/assets/vendor/chart.js/dist/Chart.min.js"></script>
+  <script src="/static/assets/vendor/chart.js/dist/Chart.extension.js"></script>
+
+{% endblock javascripts %}

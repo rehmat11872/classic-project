@@ -1,0 +1,141 @@
+{% load static %}
+<html>
+<head>
+  <style>
+    @page {
+      size: a4 portrait;
+      margin: 2cm;
+    }
+    .row {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+
+    .col-1 {
+      display: flex;
+      flex-direction: column;
+      flex-basis: 100%;
+      flex: 1;
+    }
+    .col-2 {
+      display: flex;
+      flex-direction: column;
+      flex-basis: 100%;
+      flex: 2;
+    }
+    .bg {
+      background-color:blue;
+    }
+  </style>
+</head>
+<body>
+  <div style="display:flex;">
+    <div class="bg">
+      <p>
+        Ruj. Kami   :LPIPM: SPT/SC/08/2/1 (    )
+        <br>Tarikh      :Oktober 2020
+        <br>
+        <strong>
+          <br>AHMAD BIN HAMDAN
+          <br>Tegas Sani Sdn Bhd
+        </strong>
+        <br>No. 26A, Blok C,
+        <br>Damansara Kelana,
+        <br>Petaling Jaya, 62567
+        <br>Selangor
+        <br>No. Tel : 03-88903872
+        <br>No. Faks : 03-88903872
+      </p>
+      <p>
+        Tuan/Puan,
+        <br>
+        <br><strong>SKOR QLASSIC SEMENTARA</strong>
+        <br>
+        <br>Dengan segala hormatnya perkara dia atas adalah dirujuk,
+      </p>
+    </div>
+    <div>
+      <img src="{{request.scheme}}://{{request.META.HTTP_HOST}}{% static '/assets/img/brand/logo-cidb-malaysia.png' %}" style="width:160px;">
+    </div>
+  </div>
+
+  <div style="display:flex;">
+    <div style="width:40px;">
+      <p>2.</p>
+    </div>
+    <div>
+      <p>Berikut adalah skor QLASSIC sementara bagi maklumat projek seperti dibawah:</p>
+      <div class="row">
+        <div class="col-1">Tajuk</div>
+        <div class="col-2">: lala</div>
+      </div>
+      <div class="row">
+        <div class="col-1">No. Permohonan</div>
+        <div class="col-2">: lala</div>
+      </div>
+      <div class="row">
+        <div class="col-1">Tarikh Penilaian</div>
+        <div class="col-2">: lala</div>
+      </div>
+      <div class="row">
+        <div class="col-1">Pemaju/Pemilik</div>
+        <div class="col-2">: lala</div>
+      </div>
+      <div class="row">
+        <div class="col-1">No. Pendaftaran Syarikat</div>
+        <div class="col-2">: lala</div>
+      </div>
+      <div class="row">
+        <div class="col-1">Kontraktor (Utama)</div>
+        <div class="col-2">: lala</div>
+      </div>
+      <div class="row">
+        <div class="col-1">No. Pendaftaran CIDB</div>
+        <div class="col-2">: lala</div>
+      </div>
+      <div class="row">
+        <div class="col-1">Gred</div>
+        <div class="col-2">: lala</div>
+      </div>
+      <div class="row">
+        <div class="col-1">Mata CCD</div>
+        <div class="col-2">: lala</div>
+      </div>
+      <div class="row">
+        <div class="col-1">Skor QLASSIC</div>
+        <div class="col-2">: lala</div>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;">
+    <div style="width:40px;">
+      <p>3.</p>
+    </div>
+    <div>
+      <p>
+        Skor QLASSIC ini adalah sementara dan boleh berubah sekiranya pihak kami mendapat maklumbalas negatif daripada <em>end-users</em> berkenaan <em>major defects</em> yang berlaku semasa tempoh tanggungan kecacatan (DLP). Sijil dan Laporan Penilaian akan dikeluarkan selepas tempoh DLP ini berakhir.
+      </p>
+    </div>
+  </div>
+  <p>
+    Sekian, terima kasih.
+    <br>
+    <br><strong>"BINA SEMPURNA"</strong>
+    <br>
+    <br>
+    <br><strong>(Ir. M. RAMUSEREN)</strong>
+    <br>Pengurus Besar
+    <br>Bahagian Keselamatan & Kesihatan, Alam Sekitar dan Kualiti (SHEQ)
+    <br>Sektor Pembangunan Teknologi
+    <br>b.p. Ketua Eksekutif
+    <br>Lembaga Pembangunan Industri Pembinaan (CIDB) Malaysia
+  </p>
+  <div style="text-align:center;">
+    <p>
+      <em>Surat ini adalah cetakan computer dan tandatangan tidak diperlukan
+    </p>
+  </div>
+  {{ qaa.contractor.project_title }}
+</body>

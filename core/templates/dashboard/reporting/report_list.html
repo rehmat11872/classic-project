@@ -1,0 +1,170 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard - Reporting & Certification List {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+  <!-- Header -->
+  <div class="header bg-primary pb-6">
+    <div class="container-fluid">
+      <div class="header-body">
+        <div class="row align-items-center py-4">
+          <div class="col-lg-6 col-7">
+            <h6 class="h2 text-white d-inline-block mb-0">CIDB</h6>
+            <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+              <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboards</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Reporting & Certification List</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+        <!-- Card stats -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Page content -->
+  <div class="container-fluid mt--6">
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header text-center">
+            <h2 class="mb-0">List of Projects</h2>
+          </div>
+          <div class="table-responsive py-4">
+            <table class="table table-custom-simplified table-flush">
+              <thead class="thead-light">
+                <tr>
+                  <th>Project Title</th>
+                  <th>Qaa Number</th>
+                  <th>Status</th>
+                  <th>DLP Status</th>
+
+                  <th>Attendances</th>
+                  <th>Assesment Details</th>
+                  {% if request.user.role == 'superadmin' or request.user.role == 'casc_approver' %}
+                  <th>Report Generation</th>
+                  {% endif %}
+                  <th>View</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for pr in projects %}
+                <tr>
+                  <th>{{ pr.pi.project_title }}</th>
+                  <th>{{ pr.qaa_number }}</th>
+                  <th>{{ pr.get_application_status_display }}</th>
+                  <th>END</th>
+                  <th><a href="{% url 'dashboard_attendance_detail' pr.id %}" class="btn btn-sm btn-default w-100 mb-2">View Attendance</a></th>
+                  <td>
+                    <a href="{% url 'dashboard_assessment_detail' pr.id %}" class="btn btn-sm btn-default w-100 mb-2">Internal Finishes</a>
+                    <a href="{% url 'dashboard_assessment_detail_ef' pr.id %}" class="btn btn-sm btn-default w-100 mb-2">External Finishes</a>
+                    <a href="{% url 'dashboard_assessment_detail_ew' pr.id %}" class="btn btn-sm btn-default w-100 mb-2">External Works</a>
+
+                  </td>
+                  {% if request.user.role == 'superadmin' or request.user.role == 'casc_approver' %}
+                  <td>
+                    <form action="" method="POST">
+                      {% csrf_token %}
+                      <input type="hidden" name="id" value="{{ pr.id }}">
+                      <button type="submit" name="qlassic_score_letter" class="btn btn-sm btn-default w-100 mb-2 {% if pr.doc_qlassic_score_letter_status != 'pending' %}disabled{% endif %}">Score Letter</button>
+                      <button type="submit" name="qlassic_report" class="btn btn-sm btn-default w-100 mb-2 {% if pr.doc_qlassic_report_status != 'pending' %}disabled{% endif %}">Report</button>
+                      <button type="submit" name="qlassic_certificate" class="btn btn-sm btn-default w-100 mb-2 {% if pr.doc_qlassic_certificate_status != 'pending' %}disabled{% endif %}">Certificate</button>
+                    </form>
+                  </td>
+                  {% endif %}
+                  <td>
+                    <a href="{% url 'dashboard_qlassic_report_view' 'qlassic_score_letter' pr.id %}" class="btn btn-sm btn-warning w-100 mb-2 {% if pr.doc_qlassic_score_letter_status == 'pending' %}disabled{% endif %}">Score Letter</a>
+                    <a href="{% url 'dashboard_qlassic_report_view' 'qlassic_report' pr.id %}" class="btn btn-sm btn-warning w-100 mb-2 {% if pr.doc_qlassic_report_status == 'pending' %}disabled{% endif %}">Report</a>
+                    <a href="{% url 'dashboard_qlassic_report_view' 'qlassic_certificate' pr.id %}" class="btn btn-sm btn-warning w-100 mb-2 {% if pr.doc_qlassic_certificate_status == 'pending' %}disabled{% endif %}">Certificate</a>
+                  </td>
+                  <td>
+                    {% comment %} CASC APPROVER {% endcomment %}
+                    {% if request.user.role == 'superadmin' or request.user.role == 'casc_approver' %}
+                      {% if pr.doc_qlassic_score_letter_status == 'generated' %}
+                        <a href="{% url 'dashboard_report_casc_approve' 'qlassic_score_letter' pr.id %}" class="btn btn-sm btn-info w-100 mb-2">Overview Score Letter</a>
+                      {% endif %}
+                      {% if pr.doc_qlassic_report_status == 'generated' %}
+                        <a href="{% url 'dashboard_report_casc_approve' 'qlassic_report' pr.id %}" class="btn btn-sm btn-info w-100 mb-2">Overview Report</a>
+                      {% endif %}
+                      {% if pr.doc_qlassic_certificate_status == 'generated' %}
+                        <a href="{% url 'dashboard_report_casc_approve' 'qlassic_certificate' pr.id %}" class="btn btn-sm btn-info w-100 mb-2">Overview Certificate</a>
+                      {% endif %}
+                    {% endif %}
+                    {% comment %} CIDB REVIEW {% endcomment %}
+                    {% if request.user.role == 'superadmin' or request.user.role == 'cidb_reviewer' %}
+                      {% if pr.doc_qlassic_score_letter_status == 'casc_approved' %}
+                        <a href="{% url 'dashboard_report_review' 'qlassic_score_letter' pr.id %}" class="btn btn-sm btn-info w-100 mb-2">Review Score Letter</a>
+                      {% endif %}
+                      {% if pr.doc_qlassic_report_status == 'casc_approved' %}
+                        <a href="{% url 'dashboard_report_review' 'qlassic_report' pr.id %}" class="btn btn-sm btn-info w-100 mb-2">Review Report</a>
+                      {% endif %}
+                      {% if pr.doc_qlassic_certificate_status == 'casc_approved' %}
+                        <a href="{% url 'dashboard_report_review' 'qlassic_certificate' pr.id %}" class="btn btn-sm btn-info w-100 mb-2">Review Certificate</a>
+                      {% endif %}
+                    {% endif %}
+                    {% comment %} CIDB VERIFY {% endcomment %}
+                    {% if request.user.role == 'superadmin' or request.user.role == 'cidb_verifier' %}
+                      {% if pr.doc_qlassic_score_letter_status == 'reviewed' %}
+                        <a href="{% url 'dashboard_report_verify' 'qlassic_score_letter' pr.id %}" class="btn btn-sm btn-info w-100 mb-2">Verify Score Letter</a>
+                      {% endif %}
+                      {% if pr.doc_qlassic_report_status == 'reviewed' %}
+                        <a href="{% url 'dashboard_report_verify' 'qlassic_report' pr.id %}" class="btn btn-sm btn-info w-100 mb-2">Verify Report</a>
+                      {% endif %}
+                      {% if pr.doc_qlassic_certificate_status == 'reviewed' %}
+                        <a href="{% url 'dashboard_report_verify' 'qlassic_certificate' pr.id %}" class="btn btn-sm btn-info w-100 mb-2">Verify Certificate</a>
+                      {% endif %}
+                    {% endif %}
+                    {% comment %} CIDB APPROVE {% endcomment %}
+                    {% if request.user.role == 'superadmin' or request.user.role == 'cidb_approver' %}
+                      {% if pr.doc_qlassic_score_letter_status == 'verified' %}
+                        <a href="{% url 'dashboard_report_approve' 'qlassic_score_letter' pr.id %}" class="btn btn-sm btn-info w-100 mb-2">Approve Score Letter</a>
+                      {% endif %}
+                      {% if pr.doc_qlassic_report_status == 'verified' %}
+                        <a href="{% url 'dashboard_report_approve' 'qlassic_report' pr.id %}" class="btn btn-sm btn-info w-100 mb-2">Approve Report</a>
+                      {% endif %}
+                      {% if pr.doc_qlassic_certificate_status == 'verified' %}
+                        <a href="{% url 'dashboard_report_approve' 'qlassic_certificate' pr.id %}" class="btn btn-sm btn-info w-100 mb-2">Approve Certificate</a>
+                      {% endif %}
+                    {% endif %}
+                    {% comment %} CASC APPROVAL SUBMIT {% endcomment %}
+                    {% if request.user.role == 'superadmin' or request.user.role == 'casc_approver' %}
+                      {% if pr.doc_qlassic_score_letter_status == 'approved' %}
+                        <a href="{% url 'dashboard_report_submit' 'qlassic_score_letter' pr.id %}" class="btn btn-sm btn-info w-100 mb-2">Submit Score Letter</a>
+                      {% endif %}
+                      {% if pr.doc_qlassic_report_status == 'approved' %}
+                        <a href="{% url 'dashboard_report_submit' 'qlassic_report' pr.id %}" class="btn btn-sm btn-info w-100 mb-2">Submit Report</a>
+                      {% endif %}
+                      {% if pr.doc_qlassic_certificate_status == 'approved' %}
+                        <a href="{% url 'dashboard_report_submit' 'qlassic_certificate' pr.id %}" class="btn btn-sm btn-info w-100 mb-2">Submit Certificate</a>
+                      {% endif %}
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  {% include 'includes/footer-dashboard.html' %}
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <script src="/static/assets/vendor/chart.js/dist/Chart.min.js"></script>
+  <script src="/static/assets/vendor/chart.js/dist/Chart.extension.js"></script>
+
+{% endblock javascripts %}

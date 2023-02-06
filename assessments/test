@@ -1,0 +1,12 @@
+susun data siap2
+
+
+construct list th
+construct list tbody
+
+how bout defect group that has list for result value
+bole try guna if 
+  if .length > 1:
+    for loop kan dia
+
+how to optimize logic to get dg headers

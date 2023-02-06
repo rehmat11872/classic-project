@@ -1,0 +1,61 @@
+{% extends "layouts/base-fullscreen.html" %}
+
+{% block title %} Corporate {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+  <div class="position-relative bg-01">
+    <div class="container py-8">
+      <div class="card" style="background:#00000044;">
+        <div class="card-body p-5">
+          <div class="card mb-0">
+            <div class="card-header">
+              <p class="mb-0 text-center">Please select the list from the menu (Pull-Down) or enter name in the space provided and press the search button</p>
+            </div>
+            <div class="card-body">
+              <form action="" method="GET">
+                <div class="row">
+                  <div class="col">
+                    <div class="form-group">
+                      <select name="corporate" id="" class="form-control">
+                        <option value="" disabled>Select</option>
+                        <option value="">CREAM</option>
+                        <option value="">SHEQ</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-1 text-center align-items-center">
+                    <p class="mb-0">or</p>
+                  </div>
+                  <div class="col">
+                    <div class="form-group">
+                      <div class="input-group input-group-merge input-group-alternative mb-3">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text"><i class="fas fa-search"></i>
+                        </div>
+                        <input type="email" class="form-control" placeholder="Find">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col">
+                    <div class="text-center">
+                      <button type="submit" name="register" class="btn btn-warning my-4">Search</button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> 
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

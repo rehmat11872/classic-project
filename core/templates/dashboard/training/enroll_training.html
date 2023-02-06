@@ -1,0 +1,563 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard - {{ title }} {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% load crispy_forms_tags %}
+{% load widget_tweaks %}
+
+{% block content %}
+
+  <!-- Header -->
+  <div class="header bg-primary pb-6">
+    <div class="container-fluid">
+      <div class="header-body">
+        <div class="row align-items-center py-4">
+          <div class="col-lg-6 col-7">
+            <h6 class="h2 text-white d-inline-block mb-0">CIDB</h6>
+            <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+              <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboards</a></li>
+                {% if mode == "participant" or mode == 'register' %}
+                <li class="breadcrumb-item"><a href="{% url 'dashboard_available_training_list' %}">Available Training List</a></li>
+                {% endif %}
+                {% if mode == "participant_review" %}
+                <li class="breadcrumb-item"><a href="{% url 'dashboard_available_training_list' %}">Available Training List</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard_training_participant' training.id %}">Participant</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Review</li>
+                {% endif %}
+                <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+        <!-- Card stats -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Page content -->
+  <div class="container-fluid mt--6">
+    <div class="row">
+      {% if mode == "all" %}
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header text-center">
+              <h2 class="mb-0">List of Trainings</h2>
+            </div>
+            <div class="table-responsive py-4">
+              <table class="table table-custom-simplified table-flush">
+                <thead class="thead-light">
+                  <tr>
+                    <th>Training Name</th>
+                    <th>Type</th>
+                    <th>Fees</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Seats</th>
+                    {% if request.user.role == 'superadmin' or request.user.role == 'cidb_reviewer' or request.user.is_trainer %}
+                    <th>Attendance Status</th>
+                    {% endif %}
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for tr in trainings %}
+                  <tr>
+                    <th>{{ tr.training_name }}</th>
+                    <th>{{ tr.training_type }}</th>
+                    <th>{{ tr.fee }}</th>
+                    <th>{{ tr.from_date|date:'d M Y' }}</th>
+                    <th>{{ tr.to_date|date:'d M Y' }}</th>
+                    <th>{{ tr.current_pax }}/{{ tr.size }} pax</th>
+                    {% if request.user.role == 'superadmin' or request.user.role == 'cidb_reviewer' or request.user.is_trainer %}
+                    <th>{{ tr.get_attendance_review_status_display }}</th>
+                    {% endif %}
+                    <td>
+                      {% if request.user.role == 'trainee' or request.user.role == 'applicant' %}
+                          {% if tr.is_registered == True %}
+                            <button class="btn btn-sm w-100 mb-2 btn-secondary disabled">Registered</button>
+                          {% elif tr.is_end == True %}
+                            <button class="btn btn-sm w-100 mb-2 btn-secondary disabled">Ended</button>
+                          {% elif tr.is_available == False %}
+                            <button class="btn btn-sm w-100 mb-2 btn-secondary disabled">Not Available</button>
+                          {% else%}
+                            <a href="{% url 'dashboard_training_join' tr.id %}" class="btn btn-sm w-100 mb-2 btn-info">Register</a>
+                          {% endif %}
+                      {% endif %}
+                      {% if request.user.role == 'cidb_reviewer' or request.user.role == 'superadmin' %}
+                        <a href="{% url 'dashboard_training_participant' tr.id %}" class="btn btn-sm btn-info w-100 mb-2">View Participant</a>
+                      {% endif %}
+                      {% if request.user.role == 'cidb_reviewer' or request.user.role == 'superadmin' %}
+                        {% if tr.attendance_review_status == 'need_approval' %}
+                          <a href="{% url 'dashboard_training_attendance_review' tr.id %}" class="btn btn-sm btn-info w-100 mb-2">Review Attendance</a>
+                        {% endif %}
+                      {% endif %}
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+      {% if mode == "joined_training" %}
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header text-center">
+              <h2 class="mb-0">List of Joined Trainings</h2>
+              <div class="text-center mt-3">
+                <a href="{{ payment_history_url }}" class="btn btn-primary btn-sm" target="_blank">Payment History</a>
+              </div>
+            </div>
+            <div class="table-responsive py-4">
+              <table class="table table-custom-simplified table-flush">
+                <thead class="thead-light">
+                  <tr>
+                    <th>Training Name</th>
+                    <th>Fees</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Status</th>
+                    <th>Payment Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for tr in trainings %}
+                  <tr>
+                    <th>{{ tr.training.training_name }}</th>
+                    <th>RM {{ tr.training.fee }}</th>
+                    <th>{{ tr.training.from_date|date:'d M Y' }}</th>
+                    <th>{{ tr.training.to_date|date:'d M Y' }}</th>
+                    <th>{{ tr.get_status_display }}</th>
+                    <th>{{ tr.get_payment_status_display }}</th>
+                    <td>
+                      {% if tr.status == 'need_payment' %}
+                        <button onclick="ajax_payment_request('{{ tr.id }}');" class="btn btn-sm btn-success w-100 mb-2">Pay</button>
+                      {% endif %}
+                      {% if request.user.role == 'trainee' or request.user.role == 'applicant' %}
+                        <a href="{% url 'dashboard_training_feedback_application' tr.training.id %}" class="btn btn-sm btn-info w-100 mb-2">Feedback</button>
+                      {% endif %}
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+      {% if mode == "participant" %}
+        <div class="col-lg-4">
+            <div class="card">
+              <div class="card-header text-center">
+                <h2 class="mb-0">Training</h2>
+              </div>
+              <div class="card-body text-center">
+                <h4 class="mb-0">Training Name</h4>
+                <p>{{ training.training_name}}</p>
+                <h4 class="mb-0">Seat</h4>
+                <p>{{ training.size }} pax ({{ available_seat }} available)</p>
+                <h4 class="mb-0">Training Type</h4>
+                <p>{{ training.training_type}}</p>
+                <h4 class="mb-0">From</h4>
+                <p>{{ training.from_date|date:'d M Y' }}</p>
+                <p>{{ training.from_time }}</p>
+                <h4 class="mb-0">To</h4>
+                <p>{{ training.to_date|date:'d M Y' }}</p>
+                <p>{{ training.to_time }}</p>
+                <h4 class="mb-0">Fee</h4>
+                <p>RM {{ training.fee}}</p>
+              </div>
+            </div>
+          </div>
+        <div class="col-lg-8">
+          <div class="card">
+            <div class="card-header text-center">
+              <h2 class="mb-0">List of Participants</h2>
+            </div>
+            <div class="table-responsive py-4">
+              <table class="table table-custom-simplified table-flush">
+                <thead class="thead-light">
+                  <tr>
+                    <th>Name</th>
+                    <th>IC</th>
+                    <th>Email</th>
+                    <th>Contact No</th>
+                    <th>Status</th>
+                    <th>Payment Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for tr in participants %}
+                  <tr>
+                    <th>{{ tr.participant_name }}</th>
+                    <th>{{ tr.participant_icno }}</th>
+                    <th>{{ tr.participant_email }}</th>
+                    <th>{{ tr.participant_hpno }}</th>
+                    <th>{{ tr.get_status_display }}</th>
+                    <th>{{ tr.get_payment_status_display }}</th>
+                    <td>
+                      {% if request.user.role == 'superadmin' or request.user.role == 'cidb_reviewer' %}
+                        {% if tr.status == 'pending' %}
+                        <a href="{% url 'dashboard_training_participant_review' tr.id %}" class="btn btn-sm btn-info w-100 mb-2">Review</button>
+                        {% endif %}
+                      {% endif %}
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+      {% if mode == 'register' %}
+        <div class="col-lg-4">
+          <div class="card">
+            <div class="card-header text-center">
+              <h2 class="mb-0">Training</h2>
+            </div>
+            <div class="card-body text-center">
+              <h4 class="mb-0">Training Name</h4>
+              <p>{{ training.training_name}}</p>
+              <h4 class="mb-0">Seat</h4>
+              <p>{{ training.size }} pax ({{ available_seat }} available)</p>
+              <h4 class="mb-0">Training Type</h4>
+              <p>{{ training.training_type}}</p>
+              <h4 class="mb-0">From</h4>
+              <p>{{ training.from_date|date:'d M Y' }}</p>
+              <h4 class="mb-0">To</h4>
+              <p>{{ training.to_date|date:'d M Y' }}</p>
+              <h4 class="mb-0">Fee</h4>
+              <p>RM {{ training.fee}}</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-8">
+          <div class="card">
+            <div class="card-header text-center">
+              <h2 class="mb-0">Trainee Information</h2>
+            </div>
+            <div class="card-body">
+              <form action="" method="POST"> 
+                {% csrf_token %}
+                <div class="form-group">
+                  <label for="">Name</label>
+                  <input type="text" class="form-control" name="participant_name" value="{{ request.user.name }}" readonly>
+                </div>
+                <div class="form-group">
+                  <label for="">IC Number</label>
+                  <input type="text" class="form-control" name="participant_icno" value="{{ request.user.icno }}" readonly>
+                </div>
+                <div class="form-group">
+                  <label for="">Email</label>
+                  <input type="email" class="form-control" name="participant_email" value="{{ request.user.email }}" readonly>
+                </div>
+                <div class="form-group">
+                  <label for="">Phone Number</label>
+                  <input type="text" class="form-control" name="participant_hpno" value="{{ request.user.hp_no }}" readonly>
+                </div>
+                <div class="form-group">
+                  <label for="">Organization</label>
+                  <input type="text" class="form-control" name="participant_organization" value="{{ request.user.organization }}" readonly>
+                </div>
+                <div class="form-group">
+                  <label for="">Organization Type*</label>
+                  <select class="form-control" name="participant_organization_type" required>
+                    {% for choice in organization_type_choices %}
+                    <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                    {% endfor %}
+                  <select>
+                </div>
+                <div class="form-group">
+                  <label for="">Designation*</label>
+                  <input type="text" class="form-control" name="participant_designation" required>
+                </div>
+                <div class="d-flex">
+                  <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal_accept">Register</a>
+                </div>
+                <div class="modal fade" id="modal_accept" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Join Training</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <p class="mb-0">Are you sure you want to join this training?</p>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" name="accept" class="btn btn-primary">Register</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+      {% if mode == 'participant_review' %}
+        <div class="col-lg-6">
+          <div class="card">
+            <div class="card-header text-center">
+              <h2 class="mb-0">Training</h2>
+            </div>
+            <div class="card-body text-center">
+              <h4 class="mb-0">Training Name</h4>
+              <p>{{ training.training_name}}</p>
+              <h4 class="mb-0">Seat</h4>
+              <p>{{ training.size }} pax ({{ available_seat }} available)</p>
+              <h4 class="mb-0">Training Type</h4>
+              <p>{{ training.training_type}}</p>
+              <h4 class="mb-0">From</h4>
+              <p>{{ training.from_date|date:'d M Y' }}</p>
+              <h4 class="mb-0">To</h4>
+              <p>{{ training.to_date|date:'d M Y' }}</p>
+              <h4 class="mb-0">Fee</h4>
+              <p>RM {{ training.fee}}</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="card">
+            <div class="card-header text-center">
+              <h2 class="mb-0">Trainee Information</h2>
+            </div>
+            <div class="card-body">
+                <div id="div_id_participant_name" class="form-group"> <label for="id_participant_name" class=" requiredField">
+       
+                Participant's name </label> <div class=""> <input type="text" name="participant_name" maxlength="50" class="textinput textInput form-control" readonly value="{{ rt.participant_name }}" id="id_participant_name"> </div> </div> <div id="div_id_participant_icno" class="form-group"> <label for="id_participant_icno" class=" requiredField">
+                Participant's IC number </label> <div class=""> <input type="text" name="participant_icno" maxlength="12" class="textinput textInput form-control" readonly value="{{ rt.participant_icno }}" id="id_participant_icno"> </div> </div> <div id="div_id_participant_email" class="form-group"> <label for="id_participant_email" class=" requiredField">
+                Participant's email </label> <div class=""> <input type="text" name="participant_email" maxlength="20" class="textinput textInput form-control" readonly value="{{ rt.participant_email }}" id="id_participant_email"> </div> </div> <div id="div_id_participant_hpno" class="form-group"> <label for="id_participant_hpno" class=" requiredField">
+                Participant's phone number </label> <div class=""> <input type="text" name="participant_hpno" maxlength="15" class="textinput textInput form-control" readonly value="{{ rt.participant_hpno }}" id="id_participant_hpno"> </div> </div>
+            </div>
+          </div>
+           <div class="card">
+            <div class="card-header text-center">
+              <h2 class="mb-0">CIDB Review</h2>
+            </div>
+            <div class="card-body">
+              <form action="" method="POST"> 
+                {% csrf_token %}
+                <div class="row">  
+                  <div class="col-sm-12">
+                    {{ form_review.payment_mode|as_crispy_field }}
+                    <div class="form-group">
+                      <label>Amount (RM)*</label>
+                      {% render_field form_review.amount class+="form-control" value=training.fee %}
+                    </div>
+                    <div class="form-group">
+                      <label>Remarks</label>
+                      {% render_field form_review.remarks class+="form-control" %}
+                    </div>
+                  </div>
+                </div>
+                <div class="d-flex">
+                  <a href="#" class="btn btn-danger" data-toggle="modal" data-target="#modal_reject">Reject</a>
+                  <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal_accept">Notify Trainee to Make Payment</a>
+                </div>
+                
+                <!-- Modal Reject Without Amendment -->
+                <div class="modal fade" id="modal_reject" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Reject Participant</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <p class="mb-0">Are you sure you want to reject this participant?</p>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" name="reject" class="btn btn-primary">Reject</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Modal Accept -->
+                <div class="modal fade" id="modal_accept" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Accept Participant</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <p class="mb-0">Are you sure you want to accept this participant?</p>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" name="accept" class="btn btn-primary">Accept</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </form>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+      {% if mode == 'payment' %}
+        <div class="col-lg-12">
+          <div class="card">
+            <div class="card-header text-center">
+              <h2 class="mb-0">Joined Training - Payment</h2>
+            </div>
+            <div class="card-body">
+              <h2 class="mb-0">Training Name</h2>
+              <h4 class="">{{ training.training.training_name }}</h4>
+              <p class="mb-0"><strong>Registration Number:</strong> {{ training.code_id }}</p>
+              <hr>
+              {% if proforma %}
+              <form action="{{ url }}" method="POST">
+                <input type="hidden" name="ClientReturnURL" value="{{ response_url }}">
+                <input type="hidden" name="IcOrRoc" value="{{ request.user.code_id }}">
+                <input type="hidden" name="OrderID" value="{{ proforma }}">
+                <input type="hidden" name="Currency" value="MYR">
+                <input type="hidden" name="TransactionType" value="SALE">
+                <input type="hidden" name="ClientRef0" value="">
+                <input type="hidden" name="ClientRef1" value="">
+                <input type="hidden" name="ClientRef2" value="">
+                <input type="hidden" name="ClientRef3" value="">
+                <input type="hidden" name="ClientRef4" value="">
+                <div class="form-group">
+                  <label for="">Amount (MYR)</label>
+                  <input type="text" name="Amount" value="{{ amount|floatformat:2 }}" readonly required>
+                </div>
+                <div class="form-group">
+                  <label for="">Customer Name</label>
+                  <input type="text" name="CustomerName" value="{{ training.user.name }}" readonly required>
+                </div>
+                <div class="form-group">
+                  <label for="">Customer Email</label>
+                  <input type="text" name="CustomerEmail" value="{{ training.user.email }}" readonly required>
+                </div>
+                <div class="form-group">
+                  <label for="">Customer Phone Number</label>
+                  <input type="text" name="CustomerPhoneNo" value="{{ training.user.hp_no }}" readonly required>
+                </div>
+                <div class="text-right">
+                  <button type="submit" class="btn btn-primary text-right">Pay</button>
+                </div>
+              </form>
+              {% else %}
+                <p>Problem with creating proforma. Please try again later</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endif %}
+      {% if mode == 'payment_response' %}
+        <div class="col-lg-12">
+          <div class="card">
+            <div class="card-header text-center">
+              <h2 class="mb-0">Payment Status</h2>
+            </div>
+            <div class="card-body text-center">
+              {% if payment %}
+                {% if payment.payment_status == 1 %}
+                  <h4 class="mb-0">SUCCESS</h4>
+                  {% if receipt_url %}
+                    <a href="{{ receipt_url }}" class="btn btn-sm btn-primary" target="_blank">Download Receipt</a>
+                  {% endif %}
+                {% else %}
+                  <h4 class="mb-0">FAIL</h4>
+                {% endif %}
+                <hr>
+                <p>{% if payment.payment_status != 1 %}<strong>Description:</strong>{{ payment.status_description }}{% endif %}</p>
+                <p><strong>Receipt Number:</strong>{{ payment.receipt_number }}</p>
+                <p><strong>Transaction Date:</strong>{{ payment.payment_date }}</p>
+                <div class="text-center">
+                  <a href="{% url 'dashboard_joined_training_list' %}" class="btn btn-primary">Return to Training List</a>
+                </div>
+              {% else %}
+                <h4>Problem with transaction. Please contact our staff for verifying the transaction.</h4>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+    <form id="form_payment" action="" method="POST">
+      <input type="hidden" name="ClientReturnURL">
+      <input type="hidden" name="IcOrRoc">
+      <input type="hidden" name="OrderID">
+      <input type="hidden" name="Currency">
+      <input type="hidden" name="TransactionType">
+      <input type="hidden" name="ClientRef0">
+      <input type="hidden" name="ClientRef1">
+      <input type="hidden" name="ClientRef2">
+      <input type="hidden" name="ClientRef3">
+      <input type="hidden" name="ClientRef4">
+      <input type="hidden" name="Amount">
+      <input type="hidden" name="CustomerName">
+      <input type="hidden" name="CustomerEmail">
+      <input type="hidden" name="CustomerPhoneNo">
+    </form>
+  </div>
+  {% include 'includes/footer-dashboard.html' %}
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+  <script>
+   function ajax_payment_request(id) {
+    $.ajax({
+      method: "POST",
+      headers:{
+          "X-CSRFToken": "{{ csrf_token }}"
+      },
+      url: "{% url 'ajax_api_training_payment_request' %}",
+      data: {
+        "id":id
+      },
+      dataType: 'json',
+      success: function (data) {
+        if (data.result == "PASS") {
+          $("#form_payment").attr("action", data.payment_gateway_url);;
+          $("input[name='ClientReturnURL']").val(data.ClientReturnURL);
+          $("input[name='IcOrRoc']").val(data.IcOrRoc);
+          $("input[name='OrderID']").val(data.OrderID);
+          $("input[name='Currency']").val(data.Currency);
+          $("input[name='TransactionType']").val(data.TransactionType);
+          $("input[name='ClientRef0']").val(data.ClientRef0);
+          $("input[name='ClientRef1']").val(data.ClientRef1);
+          $("input[name='ClientRef2']").val(data.ClientRef2);
+          $("input[name='ClientRef3']").val(data.ClientRef3);
+          $("input[name='ClientRef4']").val(data.ClientRef4);
+          $("input[name='Amount']").val(data.Amount);
+          $("input[name='CustomerName']").val(data.CustomerName);
+          $("input[name='CustomerEmail']").val(data.CustomerEmail);
+          $("input[name='CustomerPhoneNo']").val(data.CustomerPhoneNo);
+          $("#form_payment").submit();
+        } else {
+          alert("Problem creating the proforma. Please check with the admin :"+ data.error);
+        }
+      }
+    });
+   }
+  </script>
+
+  <script src="/static/assets/vendor/chart.js/dist/Chart.min.js"></script>
+  <script src="/static/assets/vendor/chart.js/dist/Chart.extension.js"></script>
+
+{% endblock javascripts %}

@@ -1,0 +1,18 @@
+{% autoescape off %}
+Hi {{ application.user.name }},
+
+We’ve reviewed your application thoroughly, and we would like to invite you to interview for the {{ application.get_application_type_display }} position.
+
+Date: {{ application.interview_date }}
+Time: {{ application.interview_time_from }} - {{ application.interview_time_to }}
+Venue: {{ application.interview_location }}
+
+Please attend the interview at desired time and location.
+
+Thank you.
+
+Sincerely,
+CIDB Team
+
+[This is an automated message please do not reply]
+{% endautoescape %}

@@ -1,0 +1,54 @@
+/* Custom Customization */
+body{
+    text-transform: uppercase;
+}
+.bg-primary {
+    background: #008688 !important;
+}
+.text-primary {
+    color: #008688 !important;
+}
+
+.navbar-dark .navbar-nav .show > .nav-link,
+.navbar-dark .navbar-nav .active > .nav-link,
+.navbar-dark .navbar-nav .nav-link.show,
+.navbar-dark .navbar-nav .nav-link.active
+{
+    color: #008688 !important;
+}
+
+.btn-primary {
+    color: #fff;
+    border-color:  #008688 !important;
+    background-color: #008688 !important;
+}
+
+.bg-01 {
+    background-image: url('/static/assets/img/theme/bg-1.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+.table td, .table th {
+    white-space: normal !important;
+}
+
+.form-control {
+    color:black !important;
+}
+
+td.day.active {
+    font-weight: bold !important;
+    text-shadow: none !important;
+    color: #00aeb1 !important;
+}
+span.month.active {
+    font-weight: bold !important;
+    text-shadow: none !important;
+    color: #00aeb1 !important;
+}
+span.year.active {
+    font-weight: bold !important;
+    text-shadow: none !important;
+    color: #00aeb1 !important;
+}

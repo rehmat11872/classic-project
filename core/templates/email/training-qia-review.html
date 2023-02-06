@@ -1,0 +1,16 @@
+{% autoescape off %}
+Dear CIDB Reviewer,
+
+Someone has completed all required trainings to become QLASSIC Industry Assessor. Below are the information of the trainee:
+
+Name: {{ attendance.user.name }}
+Email: {{ attendance.user.email }}
+ID: {{ attendance.user.code_id }}
+
+Please login to QLASSIC website and approve the application.
+
+Thank you.
+CIDB QLASSIC TEAM
+
+[This is an automated message please do not reply]
+{% endautoescape %}

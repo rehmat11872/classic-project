@@ -1,0 +1,14 @@
+{% autoescape off %}
+Hi CASC Reviewer,
+
+A new QLASSIC Assessment Application has been received in QLASSIC Portal and to be reviewed. Below are the details of the application:
+
+Application Number: {{ qaa.qaa_number }}
+Project Title: {{ qaa.pi.project_title }}
+Sector: {{ qaa.pi.project_type }}
+Project Value: RM {{ qaa.pi.contract_value }}
+
+Please login the QLASSIC Portal website to find more detail and review the application.
+
+[This is an automated message please do not reply]
+{% endautoescape %}

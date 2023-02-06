@@ -1,0 +1,19 @@
+{% autoescape off %}
+Hi {{ qaa.pi.contractor_name }}
+
+Assigned assessors will conduct an assessment in the following project:
+
+Project: {{ qaa.pi.project_title }}
+
+Application Number: {{ qaa.qaa_number }}
+Location: {{ qaa.pi.project_location }}
+Assessment Date: {{ qaa.assessment_date }}
+Number of days: {{ qaa.no_of_days }}
+Number of sample: {{ assessment_data.number_of_sample }}
+
+
+
+Thank you.
+
+[This is an automated message please do not reply]
+{% endautoescape %}

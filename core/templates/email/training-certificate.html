@@ -1,0 +1,16 @@
+{% autoescape off %}
+Dear {{ attendance.user.name }},
+
+You had received training certificate for the following training that you had attended:
+
+Training: {{ training.training_name }}
+Training Date: {{ training.from_date }} - {{ training.to_date }}
+Status: {{ attendance.get_pass_status_display }}
+
+Please do not hesitate to contact us if you need any further information.
+
+Thank you.
+CIDB QLASSIC TEAM
+
+[This is an automated message please do not reply]
+{% endautoescape %}

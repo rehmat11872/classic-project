@@ -1,0 +1,20 @@
+{% autoescape off %}
+Hi {{ user.name }},
+
+Your QLASSIC Assessment Application has been approved. Please make a payment in order to proceed with the assessment.
+
+Below are the details of your application:
+
+Application Number: {{ qaa.qaa_number }}
+Project Title: {{ qaa.pi.project_title }}
+Sector: {{ qaa.pi.project_type }}
+
+You can make the payment by login the QLASSIC Portal website.
+
+Please do not hesitate to contact us if you need any further information.
+
+Thank you.
+CIDB QLASSIC TEAM
+
+[This is an automated message please do not reply]
+{% endautoescape %}

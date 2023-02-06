@@ -1,0 +1,14 @@
+{% autoescape off %}
+Hi CASC Verifier,
+
+A new QLASSIC Assessment Application has been received in QLASSIC Portal and to be verified. Below are the details of the application:
+
+Application Number: {{ qaa.qaa_number }}
+Project Title: {{ qaa.pi.project_title }}
+Sector: {{ qaa.pi.project_type }}
+Project Value: RM {{ qaa.pi.project_value }}
+
+Please login the QLASSIC Portal website to find more detail and verify the application.
+
+[This is an automated message please do not reply]
+{% endautoescape %}

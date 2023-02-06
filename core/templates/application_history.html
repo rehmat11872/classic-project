@@ -1,0 +1,79 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard - Profile {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% load crispy_forms_tags %}
+{% load widget_tweaks %}
+
+{% block content %}
+
+  <!-- Header -->
+  <div class="header bg-primary pb-6">
+    <div class="container-fluid">
+      <div class="header-body">
+        <div class="row align-items-center py-4">
+          <div class="col-lg-6 col-7">
+            <h6 class="h2 text-white d-inline-block mb-0">CIDB</h6>
+            <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+              <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboards</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Profile</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+        <!-- Card stats -->
+      </div>
+    </div>
+  </div>
+
+  <h2 class="mt-5 text-center">Application history</h2>
+
+  <table class="mt-5 m-5 table">
+    <thead >
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Appliaction title</th>
+        <th scope="col">Applicant Name</th>
+        <th scope="col">User</th>
+        <th>Role</th>
+        <th scope="col">Application status</th>
+        <th scope="col">Application Date</th>
+      </tr>
+    </thead>
+    {% for history in application_history %}
+    <tbody>
+
+      <tr>
+        <th scope="row">{{forloop.counter}}</th>
+        <td>{{history.pi.project_title}}</td>
+        <td>{{history.applicant_name}}</td>
+        <td>{{history.user.email}}</td>
+        <td>{{history.role}}</td>
+        <td>{{history.application_status}}</td>
+        <td>{{history.created_date|date:'d M Y'}}</td>
+      </tr>
+  {% endfor %}
+     
+    </tbody>
+  </table>
+  
+  {% include 'includes/footer-dashboard.html' %}
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <script src="/static/assets/vendor/chart.js/dist/Chart.min.js"></script>
+  <script src="/static/assets/vendor/chart.js/dist/Chart.extension.js"></script>
+
+{% endblock javascripts %}
+
+
+
+

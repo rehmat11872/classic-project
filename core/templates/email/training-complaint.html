@@ -1,0 +1,15 @@
+{% autoescape off %}
+Dear Trainer,
+
+You had received a complaint from trainee based on the training you had conducted. Below are the detail of training as well as the comment from CIDB Reviewer:
+
+Training: {{ feedback.training.training_name }}
+Comment: {{ feedback.warning }}
+
+Please do not hesitate to contact us if you need any further information.
+
+Thank you.
+CIDB QLASSIC TEAM
+
+[This is an automated message please do not reply]
+{% endautoescape %}

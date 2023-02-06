@@ -1,0 +1,12 @@
+{% autoescape off %}
+Hi {{ application.user.name }},
+
+We are pleased to inform you that you have been selected for getting the position as certified {{ application.get_application_type_display }}.
+
+Thank you for your interest in the position and for taking the time to apply.
+
+Sincerely,
+CIDB Team
+
+[This is an automated message please do not reply]
+{% endautoescape %}

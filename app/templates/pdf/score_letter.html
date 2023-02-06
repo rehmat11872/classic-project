@@ -1,0 +1,181 @@
+{% load static %}
+{% load qr_code %}
+<html>
+<head>
+  <style>
+    @page {
+      size: a4 portrait;
+      margin: 2cm;
+    }
+    .row {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+
+    .col-1 {
+      display: flex;
+      flex-direction: column;
+      flex-basis: 100%;
+      flex: 1;
+    }
+    .col-2 {
+      display: flex;
+      flex-direction: column;
+      flex-basis: 100%;
+      flex: 2;
+    }
+    .td-1 {
+      width:180px;
+    }
+    .td-2 {
+      width:10px;
+    }
+  </style>
+</head>
+<body>
+  <table>
+    <tbody>
+      <tr>
+        <td style="vertical-align: top;">
+          <p>
+            Ruj. Kami   :LPIPM: SPT/SC/08/2/1 (    )
+            <br>Tarikh      :Oktober 2020
+            <br>
+            <strong>
+              <br>AHMAD BIN HAMDAN
+              <br>Tegas Sani Sdn Bhd
+            </strong>
+            <br>No. 26A, Blok C,
+            <br>Damansara Kelana,
+            <br>Petaling Jaya, 62567
+            <br>Selangor
+            <br>No. Tel : 03-88903872
+            <br>No. Faks : 03-88903872
+          </p>
+          <p>
+            Tuan/Puan,
+            <br>
+            <br><strong>SKOR QLASSIC SEMENTARA</strong>
+            <br>
+            <br>Dengan segala hormatnya perkara dia atas adalah dirujuk,
+          </p>
+        </td>
+        <td style="vertical-align: top;width:250px;">
+          <div style="text-align:center;">
+            <div>
+              <img src="{{ host_url }}{% static '/assets/img/brand/logo-cidb-malaysia.png' %}" style="width:160px;">
+            </div>
+            <div style="text-align:left;width:100px;">
+              <p>
+                <strong>Lembaga Pembangunan Industri Pembinaan Malaysia</strong>
+                <br>Sunway Putra Tower, Tingkat 29, No. 100, Jalan Putra
+                <br>50350 Kuala Lumpur, Malaysia
+              </p>
+            </div>
+            <div style="width:120px;">
+              {% qr_from_text qr_url size=1 image_format="png" error_correction="m" %}
+            </div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <table>
+    <tbody>
+      <tr>
+        <td style="width:40px;vertical-align: top;">
+          2.
+        </td>
+        <td>
+          <p>Berikut adalah skor QLASSIC sementara bagi maklumat projek seperti dibawah:</p>
+          <table>
+            <tbody>
+              <tr>
+                <td class="td-1">Tajuk</td>
+                <td class="td-2">:</td>
+                <td>{{ pi.project_title}}</td>
+              </tr>
+              <tr>
+                <td class="td-1">No. Permohonan</td>
+                <td class="td-2">:</td>
+                <td>{{ qaa.qaa_number}}</td>
+              </tr>
+              <tr>
+                <td class="td-1">Tarikh Penilaian</td>
+                <td class="td-2">:</td>
+                <td>{{ qaa.assessment_date }}</td>
+              </tr>
+              <tr>
+                <td class="td-1">Pemaju/Pemilik</td>
+                <td class="td-2">:</td>
+                <td>{{ pi.developer }}</td>
+              </tr>
+              <tr>
+                <td class="td-1">No. Pendaftaran Syarikat</td>
+                <td class="td-2">:</td>
+                <td>{{ pi.developer_ssm_number }}</td>
+              </tr>
+              <tr>
+                <td class="td-1">Kontraktor (Utama)</td>
+                <td class="td-2">:</td>
+                <td>{{ pi.contractor_name }}</td>
+              </tr>
+              <tr>
+                <td class="td-1">No. Pendaftaran CIDB</td>
+                <td class="td-2">:</td>
+                <td>{{ pi.contractor_cidb_registration_no }}</td>
+              </tr>
+              <tr>
+                <td class="td-1">Gred</td>
+                <td class="td-2">:</td>
+                <td>{{ pi.get_contractor_registration_grade_display }}</td>
+              </tr>
+              <tr>
+                <td class="td-1">Mata CCD</td>
+                <td class="td-2">:</td>
+                <td>lala</td>
+              </tr>
+              <tr>
+                <td class="td-1">Skor QLASSIC</td>
+                <td class="td-2">:</td>
+                <td>lala</td>
+              </tr>
+            </tbody>
+          </table>
+          <br>
+        </td>
+      </tr>
+      <tr>
+        <td style="width:40px;vertical-align: top;">
+          3.
+        </td>
+        <td>
+          <p>
+            Skor QLASSIC ini adalah sementara dan boleh berubah sekiranya pihak kami mendapat maklumbalas negatif daripada <em>end-users</em> berkenaan <em>major defects</em> yang berlaku semasa tempoh tanggungan kecacatan (DLP). Sijil dan Laporan Penilaian akan dikeluarkan selepas tempoh DLP ini berakhir.
+          </p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    Sekian, terima kasih.
+    <br>
+    <br><strong>"BINA SEMPURNA"</strong>
+    <br>
+    <br>
+    <br><strong>(Ir. M. RAMUSEREN)</strong>
+    <br>Pengurus Besar
+    <br>Bahagian Keselamatan & Kesihatan, Alam Sekitar dan Kualiti (SHEQ)
+    <br>Sektor Pembangunan Teknologi
+    <br>b.p. Ketua Eksekutif
+    <br>Lembaga Pembangunan Industri Pembinaan (CIDB) Malaysia
+  </p>
+  <div style="text-align:center;">
+    <p>
+      <em>Surat ini adalah cetakan computer dan tandatangan tidak diperlukan
+    </p>
+  </div>
+</body>

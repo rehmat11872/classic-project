@@ -1,0 +1,37 @@
+# byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# tests and coverage
+*.pytest_cache
+.coverage
+
+# database & logs
+*.db
+*.sqlite3
+*.log
+
+# venv
+env
+venv
+
+# variable
+.env
+
+# archive template
+_archive/
+
+mediafiles/
+
+# other
+.DS_Store
+
+# javascript
+package-lock.json
+
+web/staticfiles/*
+!web/staticfiles/.gitkeep 
+.vscode/symbols.json
+
+# NGINX
+nginx_waitress

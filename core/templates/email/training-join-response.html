@@ -1,0 +1,26 @@
+{% autoescape off %}
+Hi {{ rt.user.name }},
+
+{% if rt.status == 'need_payment' %}
+We would like to inform you that you have been accepted to join the following training:
+{% endif %}
+{% if rt.status == 'rejected' %}
+We regret to inform you that you have been rejected to join the following training:
+{% endif %}
+
+Training Name: {{ training.training_name }}
+Date: {{ training.from_date }} - {{ training.to_date }}
+Time: {{ training.from_time }} - {{ training.to_time }}
+{% if rt.status == 'rejected' %}Time: {{ rt.remarks }}{% endif %}
+
+{% if rt.status == 'need_payment' %}
+Please login the QLASSIC Portal website do the payment before attending the training in order to approve your registration.
+{% endif %}
+{% if rt.status == 'rejected' %}
+Please check out another training session in QLASSIC website. You can try to join other trainings.
+{% endif %}
+
+Thank you.
+
+[This is an automated message please do not reply]
+{% endautoescape %}

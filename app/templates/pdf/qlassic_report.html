@@ -1,0 +1,130 @@
+{% load static %}
+{% load qr_code %}
+<html>
+<head>
+  <style>
+    @page {
+      size: a4 portrait;
+      margin: 2cm;
+    }
+    .row {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+
+    .col-1 {
+      display: flex;
+      flex-direction: column;
+      flex-basis: 100%;
+      flex: 1;
+    }
+    .col-2 {
+      display: flex;
+      flex-direction: column;
+      flex-basis: 100%;
+      flex: 2;
+    }
+    .td-1 {
+      width:180px;
+      vertical-align:top;
+    }
+    .td-2 {
+      width:10px;
+      vertical-align:top;
+    }
+  </style>
+</head>
+<body>
+  <!-- Logo -->
+  <table>
+    <tbody>
+      <tr>
+        <td style="text-align:right;margin-right:10px;"><img src="{{ host_url }}{% static '/assets/img/brand/logo-qlassic.png' %}" style="width:140px;"></td>
+        <td style="text-align:left;margin-left:10px;"><img src="{{ host_url }}{% static '/assets/img/brand/logo-cidb-malaysia.png' %}" style="width:160px;"></td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="text-align:center;">
+    <h1 style="font-size:20px;">QLASSIC ASSESSMENT REPORT</h1>
+  </div>
+  <div style="background-color:#f5ebe4;">
+    <p style="padding-top:8px;padding-left:8px;">APPLICATION NUMBER: {{ qaa.qaa_number }}</p>
+  </div>
+  <span>
+    <strong>PROJECT TITLE:</strong>
+    <br>{{ pi.project_title }}
+  </span>
+  <hr>
+  <table>
+    <tbody>
+      <tr>
+        <td><strong>PROJECT VALUE:</strong> RM {{ pi.contract_value }}.00</td>
+        <td><strong>GROSS FLOOR AREA (GFA):</strong> {{ pi.gfa }} m2</td>
+      </tr>
+    </tbody>
+  </table>
+  <hr>
+  <table>
+    <tbody>
+      <tr>
+        <td>
+          <table>
+            <tbody>
+              <tr>
+                <td>
+                  <strong>OWNER/DEVELOPER:</strong>
+                </td>
+                <td>
+                  <div> {{ pi.developer }}</div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>SSM REGISTRATION NUMBER:</strong>
+                </td>
+                <td>
+                  <div> {{ pi.contractor_cidb_registration_no }}</div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+        <td>
+          <table>
+            <tbody>
+              <tr>
+                <td>
+                  <strong>MAIN CONTRACTOR:</strong>
+                </td>
+                <td>
+                  <div> {{ pi.developer }}</div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>CIDB REGISTRATION NUMBER:</strong>
+                </td>
+                <td>
+                  <div> {{ pi.contractor_cidb_registration_no }}</div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>GRADE:</strong>
+                </td>
+                <td>
+                  <div> {{ pi.contractor_registration_grade }}</div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <hr>
+  <p><strong>SUPER INTENDING OFFICER: </strong>{{ pi.project_manager }}</p>
+  {% qr_from_text qr_url size=1 image_format="png" error_correction="m" %}
+</body>

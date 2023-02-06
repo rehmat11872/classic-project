@@ -1,0 +1,143 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard - Report Details {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+  <!-- Header -->
+  <div class="header bg-primary pb-6">
+    <div class="container-fluid">
+      <div class="header-body">
+        <div class="row align-items-center py-4">
+          <div class="col-lg-6 col-7">
+            <h6 class="h2 text-white d-inline-block mb-0">CIDB</h6>
+            <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+              <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboards</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard_report_list' %}">Reporting & Certification List</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Detail</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+        <!-- Card stats -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Page content -->
+  <div class="container-fluid mt--6">
+
+    <div class="row">
+      <div class="col-md-5">
+        <div class="card">
+          <div class="card-header text-center">
+            <h2 class="mb-0">Project Title</h2>
+          </div>
+          <div class="card-body text-center">
+            <h4>{{ qaa.pi.project_title }}</h4>
+          </div>
+        </div>
+        {% if mode == 'casc_approve' %}
+          <div class="card">
+            <div class="card-header text-center">
+              <h2 class="mb-0">Edit Score Information</h2>
+            </div>
+            <div class="card-body">
+              <form action="" method="POST">
+                {% csrf_token %}
+                {{ form_score|crispy }}
+                <button type="submit" name="score" class="btn btn-primary">Update</button>
+              </form>
+            </div>
+          </div>
+        {% endif %}
+        
+        {% if mode != 'view' %}
+        <div class="card">
+          <div class="card-header text-center">
+            <h2 class="mb-0">Action</h2>
+          </div>
+          <div class="card-body text-center">
+            <a href="#" class="btn btn-primary w-100" data-toggle="modal" data-target="#modal_yes">
+              {% if mode == 'casc_approve' %}Submit for Reviewing?{% endif %}
+              {% if mode == 'review' %}Submit for Verifying?{% endif %}
+              {% if mode == 'verify' %}Submit for Approving?{% endif %}
+              {% if mode == 'approve' %}Approve Document?{% endif %}
+              {% if mode == 'submit' %}Send to Applicant?{% endif %}
+            </a>
+            <!-- Modal Yes -->
+            <div class="modal fade" id="modal_yes" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                      {% if mode == 'casc_approve' %}Submit for Reviewing?{% endif %}
+                      {% if mode == 'review' %}Submit for Verifying?{% endif %}
+                      {% if mode == 'verify' %}Submit for Approving?{% endif %}
+                      {% if mode == 'approve' %}Approve Document?{% endif %}
+                      {% if mode == 'submit' %}Send to Applicant?{% endif %}
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <form action="" method="POST">
+                  {% csrf_token %}
+                  <div class="modal-body">
+                    <p class="mb-0">
+                      {% if mode == 'casc_approve' %}Are you sure you want to submit this document for reviewing?{% endif %}
+                      {% if mode == 'review' %}Are you sure you want to submit this document for verifiying?{% endif %}
+                      {% if mode == 'verify' %}Are you sure you want to submit this document for approving?{% endif %}
+                      {% if mode == 'approve' %}Are you sure you want to approve this document?{% endif %}
+                      {% if mode == 'submit' %}Are you sure you want to send this document to applicant?{% endif %}
+                    </p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" name="approve" class="btn btn-primary">Confirm</button>
+                  </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+      <div class="col-md-7">
+        <div class="card">
+          <div class="card-body">
+            {% comment %} {% if report_type == 'qlassic_score_letter' %}
+              <iframe src="{% url 'qlassic_report_generate' 'qlassic_score_letter' qaa.id %}" style="width:100%;height:800px;" title="Score Letter" frameborder="0"></iframe>
+            {% endif %}
+            {% if report_type == 'qlassic_report' %}
+              <iframe src="{% url 'qlassic_report_generate' 'qlassic_report' qaa.id %}" style="width:100%;height:800px;" title="QLASSIC Report"></iframe>
+            {% endif %}
+            {% if report_type == 'qlassic_certificate' %}
+              <iframe src="{% url 'qlassic_report_generate' 'qlassic_certificate' qaa.id %}" style="width:100%;height:800px;" title="QLASSIC Certificate"></iframe>
+            {% endif %} {% endcomment %}
+            <iframe src="{{ report.report_file.url }}" style="width:100%;height:800px;" title="{{ report.get_report_type_display }}"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  {% include 'includes/footer-dashboard.html' %}
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <script src="/static/assets/vendor/chart.js/dist/Chart.min.js"></script>
+  <script src="/static/assets/vendor/chart.js/dist/Chart.extension.js"></script>
+
+{% endblock javascripts %}

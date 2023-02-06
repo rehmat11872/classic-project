@@ -1,0 +1,330 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard - {{ title }} {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% load crispy_forms_tags %}
+{% load widget_tweaks %}
+
+{% block content %}
+
+  <!-- Header -->
+  <div class="header bg-primary pb-6">
+    <div class="container-fluid">
+      <div class="header-body">
+        <div class="row align-items-center py-4">
+          <div class="col-lg-6 col-7">
+            <h6 class="h2 text-white d-inline-block mb-0">CIDB</h6>
+            <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+              <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboards</a></li>
+                {% if mode == 'update' or mode == 'review' %}
+                <li class="breadcrumb-item"><a href="{% url 'dashboard_training_list' %}">Manage Training</a></li>
+                {% endif %}
+                <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+        <!-- Card stats -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Page content -->
+  <div class="container-fluid mt--6">
+    <div class="row">
+      {% if mode == 'update' or mode == 'review' or mode == 'create' %}
+        <div class="{% if mode == 'update' or mode == 'review' %}col-lg-6{% else %}col-lg-12{% endif %}">
+          <div class="card">
+            <div class="card-header text-center">
+              <h2 class="mb-0">
+                {% if mode == 'update' %}Edit Training{% endif %}
+                {% if mode == 'create' %}Add New Training{% endif %}
+                {% if mode == 'review' %}Training Information{% endif %}
+              </h2>
+              <p class="mb-0">Training Information</p>
+            </div>
+            <div class="card-body">
+              <form action="" method="POST" enctype="multipart/form-data"> 
+                {% csrf_token %}
+                <hr class="my-1">
+                <fieldset {% if mode == 'review' %}disabled="disabled"{% endif %}>
+                  <div class="row">
+                    <div class="col-md-12">
+                      {{ training_form.training_name|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                      {{ training_form.from_date|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                      {{ training_form.to_date|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                      {{ training_form.from_time|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                      {{ training_form.to_time|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                      {{ training_form.size|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                      {{ training_form.training_type|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label>Certificate Type*</label>
+                        {% render_field training_form.cert_type onchange="check_cm()" class+="form-control" %}
+                      </div>
+                    </div>
+                    <div class="col-md-6" id="form_passing_mark" style="display:none;">
+                      {{ training_form.passing_mark|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                      {{ training_form.ccd_point|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                      {{ training_form.fee|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                      {{ training_form.address1|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                      {{ training_form.address2|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                      {{ training_form.postcode|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                      {{ training_form.city|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                      {{ training_form.state|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                      {{ training_form.publish|as_crispy_field }}
+                    </div>
+                  </div>
+                </fieldset>
+                {% if mode == 'update' %}
+                  <button type="submit" name="update_training" class="btn btn-primary">Update</button>
+                {% endif %}
+                {% if mode == 'create' %}
+                  <button type="submit" class="btn btn-primary">Create</button>
+                {% endif %}
+              </form>
+              <script>
+                function check_cm(){
+                  console.log($('#id_cert_type').val());
+                  if ($('#id_cert_type option:selected').val() == 'pass') {
+                    $('#form_passing_mark').css("display",'block');
+                  } else {
+                    $('#form_passing_mark').css("display",'none');
+                  }
+                }
+                $(document).ready( function () {
+                  check_cm();
+                });
+              </script>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+
+      {% if mode == 'update' or mode == 'review' %}
+        <div class="col-lg-6">
+          <div class="card">
+            <div class="card-header text-center">
+              <h2 class="mb-0">Trainer</h2>
+            </div>
+            <div class="table-responsive py-4">
+              <table class="table table-custom-simplified table-flush">
+                <thead class="thead-light">
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Contact Number</th>
+                    {% if mode != review %}
+                      <th>Action</th>
+                    {% endif %}
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for coach in coaches %}
+                  <tr>
+                    <th>{{ coach.name }}</th>
+                    <td>{{ coach.email }}</td>
+                    <td>{{ coach.hp_no }}</td>
+                    {% if mode != 'review' %}
+                      <td>
+                        <a href="{% url 'dashboard_training_coach_update' coach.id %}" class="btn btn-sm btn-info w-100 mb-2">Edit</button>
+                      </td>
+                    {% endif %}
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          {% if mode == 'update' %}
+          <div class="card">
+            <div class="card-header text-center">
+              <h2 class="mb-0">Add New Trainer</h2>
+              <p class="mb-0">Trainer Information</p>
+            </div>
+            <div class="card-body">
+              <form action="" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="training" value="{{ training.id }}">
+                <div class="row">
+                  <div class="col-md-6">
+                    {{ coach_form.name|as_crispy_field }}
+                  </div>
+                  <div class="col-md-6">
+                    {{ coach_form.email|as_crispy_field }}
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>Phone Number</label>
+                      {% render_field coach_form.hp_no class+="form-control phone-input" %}
+                    </div>
+                  </div>
+                </div>
+                <button type="submit" name="create_coach" class="btn btn-primary">Add</button>
+              </form>
+            </div>
+          </div>
+          {% endif %}
+          {% if mode == 'review' %}
+          <div class="card">
+            <div class="card-header text-center">
+              <h2 class="mb-0">By CIDB Reviewer</h2>
+            </div>
+            <div class="card-body">
+              <form action="" method="POST">
+                {% csrf_token %}
+                <div class="d-flex justify-content-center">
+                  <a href="#" class="btn btn-danger" data-toggle="modal" data-target="#modal_reject">Reject</a>
+                  <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal_accept">Accept</a>
+                  <!-- Modal Reject -->
+                  <div class="modal fade" id="modal_reject" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLabel">Reject Training</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <div class="modal-body">
+                          <p class="mb-0">Are you sure you want to reject the created training?</p>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                          <button type="submit" name="reject" class="btn btn-primary">Reject</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Modal Accept -->
+                  <div class="modal fade" id="modal_accept" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLabel">Accept Training</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <div class="modal-body">
+                          <p class="mb-0">Are you sure you want to accept created training?</p>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                          <button type="submit" name="accept" class="btn btn-primary">Accept</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                
+                </div>
+              </form>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      {% endif %}
+      {% if mode == 'list' %}
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header text-center">
+              <h2 class="mb-0">List of Trainings</h2>
+            </div>
+            <div class="table-responsive py-4">
+              <table class="table table-custom-simplified table-flush">
+                <thead class="thead-light">
+                  <tr>
+                    <th>Training Name</th>
+                    <th>Fees</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Seats</th>
+                    <th>Status</th>
+                    <th>Attendance Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for tr in trainings %}
+                  <tr>
+                    <th>{{ tr.training_name }}</th>
+                    <th>RM {{ tr.fee }}</th>
+                    <th>{{ tr.from_date|date:'d M Y' }}</th>
+                    <th>{{ tr.to_date|date:'d M Y' }}</th>
+                    <th>{{ tr.current_pax }}/{{ tr.size }} pax</th>
+                    <th>{{ tr.get_review_status_display }}</th>
+                    <th>{{ tr.get_attendance_review_status_display }}</th>
+                    <td>
+                      {% if tr.review_status == 'pending' %}
+                        {% if request.user.role == 'superadmin' or request.user.is_trainer %}
+                          <a href="{% url 'dashboard_training_update' tr.id %}" class="btn btn-sm btn-info w-100 mb-2">Edit</button>
+                        {% endif %}
+                        {% if request.user.role == 'cidb_reviewer' or request.user.role == 'superadmin' %}
+                          <a href="{% url 'dashboard_training_review' tr.id %}" class="btn btn-sm btn-info w-100 mb-2">Review</button>
+                        {% endif %}
+                      {% endif %}
+                      {% if tr.review_status == 'accepted' %}
+                        {% if request.user.is_trainer or request.user.role == 'superadmin' %}
+                          {% if tr.attendance_review_status == 'pending' %}
+                          <a href="{% url 'dashboard_training_attendance_trainer' tr.id %}" class="btn btn-sm btn-info w-100 mb-2">Manage Attendance</button>
+                          {% endif %}
+                        {% endif %}
+                      {% endif %}
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+
+  </div>
+  {% include 'includes/footer-dashboard.html' %}
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <script src="/static/assets/vendor/chart.js/dist/Chart.min.js"></script>
+  <script src="/static/assets/vendor/chart.js/dist/Chart.extension.js"></script>
+
+{% endblock javascripts %}

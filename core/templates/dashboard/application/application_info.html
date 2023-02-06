@@ -1,0 +1,781 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard - Review QLASSIC Application {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% load crispy_forms_tags %}
+{% load widget_tweaks %}
+
+{% block content %}
+
+  <!-- Header -->
+  <div class="header bg-primary pb-6">
+    <div class="container-fluid">
+      <div class="header-body">
+        <div class="row align-items-center py-4">
+          <div class="col-lg-6 col-7">
+            <h6 class="h2 text-white d-inline-block mb-0">CIDB</h6>
+            <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+              <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboards</a></li>
+                {% if assessor_view %}
+                  {% if assessor_mode == 'all' %}
+                  <li class="breadcrumb-item"><a href="{% url 'dashboard_application_assessor_list_all' %}">Assessment Application List</a></li>
+                  {% endif %}
+                  {% if assessor_mode == 'own' %}
+                  <li class="breadcrumb-item"><a href="{% url 'dashboard_application_assessor_list_own' %}">Assessment Application List</a></li>
+                  {% endif %}
+                  <li class="breadcrumb-item active" aria-current="page">QLASSIC Application Info</li>
+                {% else %}
+                  <li class="breadcrumb-item"><a href="{% url 'dashboard_application_list' %}">Application List</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">Review QLASSIC Application</li>
+                {% endif %}
+              </ol>
+            </nav>
+          </div>
+        </div>
+        <!-- Card stats -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Page content -->
+  <div class="container-fluid mt--6">
+    <div class="row">
+
+      {% if mode == 'assign_assessor' %}
+      <div class="col-lg-5">
+        <div class="card">
+          <div class="card-header text-center">
+            <h2 class="mb-0">Project Title</h2>
+          </div>
+          <div class="card-body text-center">
+            <h4>{{ qaa.pi.project_title }}</h4>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header text-center">
+            <h2 class="mb-0">Suggested Assessor</h2>
+          </div>
+          <div class="card-body">
+            <form action="" method="POST">
+              {% csrf_token %}
+              <div class="form-group">
+                <label class="form-control-label" for="input_title">Assessment Date</label>
+                <input type='text' class="form-control" value="{{ assessment_date }}" readonly>
+              </div>
+
+              <div class="form-group">
+                <label class="form-control-label" for="input_title">location</label>
+                <input type='text' class="form-control" value="{{ qaa.pi.get_project_location_display }}" readonly>
+              </div>
+              <div class="form-group">
+                <label class="form-control-label" for="input_title">Edit Assigned Assessors</label>
+                {% for ass in suggested_assessors %}
+                  <div class="form-group d-flex">
+                    <input type='text' class="form-control" value="{{ ass.assessor }} - {{ ass.assessor.user.name }}" readonly>
+                    {% if ass.acception == 'accept' %}
+                      <span class="pl-2">Accepted</span>
+                    {% elif ass.acception == 'pending' %}
+                      <span class="pl-2">Wait For Respond</span>
+                    {% else %}
+                      <a class="btn btn-info" href="{% url 'dashboard_application_assessor_change' ass.id %}">Change</a>
+                    {% endif %}
+                  </div>
+                {% endfor %}
+              </div>
+
+              <div class="d-flex justify-content-center">
+                <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal_assign">Assign</a>
+                <!-- Modal Reject Without Amendment -->
+                <div class="modal fade" id="modal_assign" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Assign Assessors</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <p class="mb-0">Are you sure you want to assign these assessors?</p>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Assign</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+      {% if mode == 'verify_assessor' %}
+      <div class="col-lg-5">
+        <div class="card">
+          <div class="card-header text-center">
+            <h2 class="mb-0">Project Title</h2>
+          </div>
+          <div class="card-body text-center">
+            <h4>{{ qaa.pi.project_title }}</h4>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header text-center">
+            <h2 class="mb-0">Details</h2>
+          </div>
+          <div class="card-body">
+            <form action="" method="POST">
+              {% csrf_token %}
+              <div class="form-group">
+                <label class="form-control-label" for="input_title">Project Location</label>
+                <input type='text' class="form-control" value="{{ qaa.pi.get_project_location_display }}" readonly>
+              </div>
+              <div class="form-group">
+                <label class="form-control-label" for="input_title">Assessment Date</label>
+                <input type='text' class="form-control" value="{{ qaa.proposed_date }}" readonly>
+              </div>
+              <div class="form-group">
+                <label class="form-control-label" for="input_title">Number of Days</label>
+                <input type='text' class="form-control" value="{{ qaa.no_of_days }}" readonly>
+              </div>
+              <div class="form-group">
+                <label class="form-control-label" for="input_title">You Have Been Assigned To This Project</label>
+                <input type='text' class="form-control" value="{{ request.user.name }}" readonly>
+              </div>
+
+
+              <div class="form-group">
+                <label class="form-control-label" for="input_title">You Have Been Assigned To This Project</label>
+                <textarea class="form-control" name="remarks" id="input_announcement" rows="3"></textarea>
+              </div>
+
+              <div class="d-flex justify-content-center">
+                <a href="#" class="btn btn-danger" data-toggle="modal" data-target="#modal_reject">Reject</a>
+                <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal_accept">Accept</a>
+                <!-- Modal Reject -->
+                <div class="modal fade" id="modal_reject" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Reject Assessor</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <p class="mb-0">Are you sure you want to reject to be assessor for this project?</p>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" name="reject" class="btn btn-primary">Reject</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Modal Accept -->
+                <div class="modal fade" id="modal_accept" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Accept Assessor</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <p class="mb-0">Are you sure you want to accept to be assessor for this project?</p>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" name="accept" class="btn btn-primary">Accept</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+      {% if mode == '' %}
+      <div class="col-lg-5">
+        <div class="card">
+          <div class="card-header text-center">
+            <h2 class="mb-0">Application Status</h2>
+          </div>
+          <div class="card-body text-center">
+            <h4>{{ qaa.pi.project_title }}</h4>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header text-center">
+            <h2 class="mb-0">Details</h2>
+          </div>
+          <div class="card-body">
+              <div class="form-group">
+                <label class="form-control-label" for="input_title">Status</label>
+                <h4><strong>{{ qaa.get_application_status_display }}</strong></h4>
+              </div>
+              <hr>
+              {% if qaa.application_status == 'rejected' or qaa.application_status == 'rejected_amendment' %}
+                <div class="form-group">
+                  <label class="form-control-label" for="input_title">Reviewed by</label>
+                  <div class="d-flex"> 
+                    <p class="pr-2"><strong>Name: </strong></p>
+                    <p>{{ qaa.reviewed_by }}</p>
+                  </div>
+                  <div class="d-flex"> 
+                    <p class="pr-2"><strong>Remarks: </strong></p>
+                    <p>{{ qaa.remarks1 }}</p>
+                  </div>
+                  <div class="d-flex"> 
+                    <p class="pr-2"><strong>Date: </strong></p>
+                    <p>{{ qaa.reviewed_date }}</p>
+                  </div>
+                </div>
+                <hr>
+                <div class="form-group">
+                  <label class="form-control-label" for="input_title">Verified by</label>
+                  <div class="d-flex"> 
+                    <p class="pr-2"><strong>Name: </strong></p>
+                    <p>{{ qaa.verified_by }}</p>
+                  </div>
+                  <div class="d-flex"> 
+                    <p class="pr-2"><strong>Remarks: </strong></p>
+                    <p>{{ qaa.remarks2 }}</p>
+                  </div>
+                  <div class="d-flex"> 
+                    <p class="pr-2"><strong>Date: </strong></p>
+                    <p>{{ qaa.verified_date }}</p>
+                  </div>
+                </div>
+              {% elif request.user.role == 'contractor' or request.user.role == 'applicant' or request.user.is_assessor %}
+              <div class="form-group">
+                <div class="d-flex"> 
+                  <p class="pr-2"><strong>Review Date: </strong></p>
+                  <p>{{ qaa.reviewed_date }}</p>
+                </div>
+                <div class="d-flex"> 
+                  <p class="pr-2"><strong>Verify Date: </strong></p>
+                  <p>{{ qaa.verified_date }}</p>
+                </div>
+              </div>
+              {% else %}
+              <div class="form-group">
+                <label class="form-control-label" for="input_title">Reviewed by</label>
+                <div class="d-flex"> 
+                  <p class="pr-2"><strong>Name: </strong></p>
+                  <p>{{ qaa.reviewed_by }}</p>
+                </div>
+                <div class="d-flex"> 
+                  <p class="pr-2"><strong>Remarks: </strong></p>
+                  <p>{{ qaa.remarks1 }}</p>
+                </div>
+                <div class="d-flex"> 
+                  <p class="pr-2"><strong>Date: </strong></p>
+                  <p>{{ qaa.reviewed_date }}</p>
+                </div>
+              </div>
+              <hr>
+              <div class="form-group">
+               <label class="form-control-label" for="input_title">Verified by</label>
+                <div class="d-flex"> 
+                  <p class="pr-2"><strong>Name: </strong></p>
+                  <p>{{ qaa.verified_by }}</p>
+                </div>
+                <div class="d-flex"> 
+                  <p class="pr-2"><strong>Remarks: </strong></p>
+                  <p>{{ qaa.remarks2 }}</p>
+                </div>
+                <div class="d-flex"> 
+                  <p class="pr-2"><strong>Date: </strong></p>
+                  <p>{{ qaa.verified_date }}</p>
+                </div>
+              </div>
+              {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="col-lg-7">
+        <div class="card">
+          <div class="card-header text-center">
+            <h2 class="mb-0">QLASSIC Application - Application Number: {{ qaa.qaa_number }}</h2>
+          </div>
+          <div class="card-body">
+              <h3 class="mt-3">APPLICANT INFORMATION</h3>
+              
+              <hr class="my-1">
+              <div class="row">
+
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_title">Applicant name</label>
+                    <input type='text' class="form-control" value="{{ qaa.applicant_name }}" readonly>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_title">Role</label>
+                    <input type='text' class="form-control" value="{{ qaa.get_role_display }}" readonly>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_title">Registered Address 1</label>
+                    <input type='text' class="form-control" value="{{ qaa.address1 }}" readonly>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_title">Registered Address 2</label>
+                    <input type='text' class="form-control" value="{{ qaa.address2 }}" readonly>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_title">City</label>
+                    <input type='text' class="form-control" value="{{ qaa.city }}" readonly>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_title">State</label>
+                    <input type='text' class="form-control" value="{{ qaa.get_state_display }}" readonly>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_title">Postal Code</label>
+                    <input type='text' class="form-control" value="{{ qaa.postcode }}" readonly>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_title">Email</label>
+                    <input type='text' class="form-control" value="{{ qaa.email }}" readonly>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_title">Tel No</label>
+                    <input type='text' class="form-control" value="{{ qaa.hp_no }}" readonly>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_title">Fax No</label>
+                    <input type='text' class="form-control" value="{{ qaa.fax_no }}" readonly>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_title">Contract type</label>
+                    <input type='text' class="form-control" value="{{ qaa.get_contract_type_display }}" readonly>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_title">Building type</label>
+                    <input type='text' class="form-control" value="{{ qaa.get_building_type_display }}" readonly>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_title">Proposed assessment date</label>
+                    <form action="" method="post">
+                      {% csrf_token %}
+                    <input name="get_date" type='text' class="form-control" value="{{ qaa.proposed_date|date:'d/m/Y' }}" > <br>
+                    <button class="btn btn-primary" type="submit">Change date</button>
+                   </form>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="input_title">Application date</label>
+                    <input type='text' class="form-control" value="{{ qaa.created_date|date:'d/m/Y' }}" readonly>
+                  </div>
+                </div>
+              </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+              <h3 class="mt-3">PROJECT INFORMATION</h3>
+              <hr class="my-1">
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label class="form-control-label" for="input_title">Rating type</label>
+                        <input type='text' class="form-control" value="{{ qaa.pi.get_rating_type_display }}" readonly>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label class="form-control-label" for="input_title">Sector</label>
+                        <input type='text' class="form-control" value="{{ qaa.pi.get_project_type_display }}" readonly>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label class="form-control-label" for="input_title">Levy receipt</label>
+                        <p>{% if qaa.pi.levy_receipt %}<a href="{{ qaa.pi.levy_receipt.url }}">Download</a>{% else %}None{% endif %}</p>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label class="form-control-label" for="input_title">Project Title</label>
+                        <textarea class="form-control" name="project_title" id="input_announcement" rows="3" required="" readonly>{{ qaa.pi.project_title }}</textarea>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label class="form-control-label" for="input_title">Project manager</label>
+                        <input type='text' class="form-control" value="{{ qaa.pi.project_manager }}" readonly>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label class="form-control-label" for="input_title">Developer</label>
+                        <input type='text' class="form-control" value="{{ qaa.pi.developer }}" readonly>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label class="form-control-label" for="input_title">Developer SSM number</label>
+                        <input type='text' class="form-control" value="{{ qaa.pi.developer_ssm_number }}" readonly>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label class="form-control-label">Contractor name</label>
+                        <input type="text" class="form-control" value="{{ qaa.pi.contractor_name }}" readonly>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label class="form-control-label">CIDB registration number</label>
+                        <input type="text" class="form-control" value="{{ qaa.pi.contractor_cidb_registration_no }}" readonly>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label class="form-control-label">CIDB registration grade</label>
+                        <input type="text" class="form-control" value="{{ qaa.pi.contractor_registration_grade }}" readonly>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label class="form-control-label">Does the project have ISO 9001?</label>
+                        <input type="text" class="form-control" value="{{ qaa.pi.get_iso9001_display }}" readonly>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label class="form-control-label">Does the project have SHASSIC?</label>
+                        <input type="text" class="form-control" value="{{ qaa.pi.get_shassic_display }}" readonly>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label class="form-control-label">Does the project have BIM?</label>
+                        <input type="text" class="form-control" value="{{ qaa.pi.get_bim_display }}" readonly>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label class="form-control-label">Does the project have MyCREST?</label>
+                        <input type="text" class="form-control" value="{{ qaa.pi.get_mycrest_display }}" readonly>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label class="form-control-label">Gross Floor Area (meter square)</label>
+                        <input type="text" class="form-control" value="{{ qaa.pi.gfa }}" readonly>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label class="form-control-label">Contract Value</label>
+                        <input type="text" class="form-control" id="input_title" value="{{ qaa.pi.contract_value }}" readonly>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label class="form-control-label">Project Location</label>
+                        <input type="text" class="form-control" id="input_title" value="{{ qaa.pi.get_project_location_display }}" readonly>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label class="form-control-label">Architect Firm</label>
+                        <input type="text" class="form-control" id="input_title" value="{{ qaa.pi.architect_firm }}" readonly>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label class="form-control-label">Structural & Civil Engineer Firm</label>
+                        <input type="text" class="form-control" id="input_title" value="{{ qaa.pi.structural_civil_engineer_firm }}" readonly>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label class="form-control-label">M&E Engineer Firm</label>
+                        <input type="text" class="form-control" id="input_title" value="{{ qaa.pi.mechanical_electrical_firm }}" readonly>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label class="form-control-label">Site Representative</label>
+                        <input type="text" class="form-control" id="input_title" value="{{ qaa.pi.site_representative }}" readonly>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label class="form-control-label">Email</label>
+                        <input type="text" class="form-control" id="input_title" value="{{ qaa.pi.email }}" readonly>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label class="form-control-label">Contact Number</label>
+                        <input type="text" class="form-control" id="input_title" value="{{ qaa.pi.hp_no }}" readonly>
+                      </div>
+                    </div>
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label class="form-control-label">Construction Method</label>
+                        <input type="text" class="form-control" id="input_title" value="{{ qaa.pi.get_construction_method_display }}" readonly>
+                      </div>
+                    </div>
+                    {% if qaa.pi.construction_method == 'ibs' %}
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label class="form-control-label">IBS Percentage (%)</label>
+                        <input type="text" class="form-control" id="input_title" value="{{ qaa.pi.ibs_percentage }}" readonly>
+                      </div>
+                    </div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+          </div>
+        </div>
+        {% if mode != 'review' and mode != 'verify' %}
+        <div class="card">
+          <div class="card-body">
+    
+              <h3 class="mt-3">SUPPORTING DOCUMENTS</h3>
+              <hr class="my-1">
+              {% for sd in supporting_documents %}
+                <div class="form-group">
+                  <label for="" class="form-control-label">{{ sd.title }}</label>
+                  {% if role == "contractor" %}
+                  <p class="mb-0"><strong>Original: </strong>{% if sd.sd.file %}<a href="{{ sd.sd.file.url }}">Download</a>{% else %}None{% endif %}</p>
+                  {% elif role == "casc_reviewer" %}
+                  <p class="mb-0"><strong>Reviewed: </strong>{% if sd.sd.reviewed_file %}<a href="{{ sd.sd.reviewed_file.url }}">Download</a>{% else %}None{% endif %}</p>
+                  {% else %}
+                  <p class="mb-0"><strong>Original: </strong>{% if sd.sd.file %}<a href="{{ sd.sd.file.url }}">Download</a>{% else %}None{% endif %}</p>
+                  <p class="mb-0"><strong>Reviewed: </strong>{% if sd.sd.reviewed_file %}<a href="{{ sd.sd.reviewed_file.url }}">Download</a>{% else %}None{% endif %}</p>
+                  {% endif %}
+                </div>
+              {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+      </div>
+      {% if mode == 'review' or mode == 'verify' %}
+        <div class="col-lg-5">
+          <div class="card">
+            <div class="card-header text-center">
+              <h2 class="mb-0">Review Supporting Documents</h2>
+            </div>
+            <div class="card-body">
+              <form action="" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% for sd in supporting_documents %}
+                  <div class="form-group">
+                    <label for="" class="form-control-label">{{ sd.title }}</label>
+                    <p class="mb-0"><strong>Original: </strong>{% if sd.sd.file %}<a href="{{ sd.sd.file.url }}">Download</a>{% else %}None{% endif %}</p>
+                    <p class="mb-0"><strong>Reviewed: </strong>{% if sd.sd.reviewed_file %}<a href="{{ sd.sd.reviewed_file.url }}">Download</a>{% else %}None{% endif %}</p>
+                    <input type="file" class="form-control" name="{{ sd.name }}">
+                  </div>
+                {% endfor %}
+                <div class="d-flex justify-content-center">
+                  <button type="submit" name="review_sd" class="btn btn-primary">Save</a>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header text-center">
+              <h2 class="mb-0">To be filled by 
+                {% if mode == 'review' %}Reviewer{% endif %}
+                {% if mode == 'verify' %}Verifier{% endif %}
+              </h2>
+            </div>
+            <div class="card-body">
+              <form action="" method="POST">
+                {% csrf_token %}
+
+                {% if mode == 'review' %}
+                  {{ form_review.payment_mode|as_crispy_field }}
+                  <div class="form-group">
+                    <label>Number of block/zone/assessment*</label>
+                    {% render_field form_review.no_of_blocks class+="form-control number-input" type='text' %}
+                  </div>
+                  <div class="form-group">
+                    <label>Number of days*</label>
+                    {% render_field form_review.no_of_days class+="form-control number-input" type='text' %}
+                  </div>
+                  {{ form_review.no_of_assessor|as_crispy_field }}
+                  {{ form_review.remarks1|as_crispy_field }}
+                  {{ form_review.proposed_date|as_crispy_field }}
+                {% endif %}
+
+                {% if mode == 'verify' %}
+                  {{ form_verify.payment_mode|as_crispy_field }}
+                  <div class="form-group">
+                    <label>Number of block/zone/assessment*</label>
+                    {% render_field form_verify.no_of_blocks class+="form-control number-input" type='text' %}
+                  </div>
+                  <div class="form-group">
+                    <label>Number of days*</label>
+                    {% render_field form_verify.no_of_days class+="form-control number-input" type='text' %}
+                  </div>
+                  {{ form_verify.no_of_assessor|as_crispy_field }}
+                  <div class="form-group">
+                    <label for="input_file">Remarks 1 - by CASC Reviewer</label>
+                    <textarea cols="40" rows="10" maxlength="255" class="textarea form-control" id="id_remarks2" readonly>{{ qaa.remarks1 }}</textarea>
+                  </div>
+                  <div class="form-group">
+                    <label for="input_file">Proposed date - by CASC Reviewer</label>
+                    <input type="text" value="{{ qaa.proposed_date }}" class="dateinput form-control" required="" readonly>
+                  </div>
+                  {{ form_verify.remarks2|as_crispy_field }}
+                  <div class="form-group">
+                    <label for="input_file">Proposed date - by CASC Verifier</label>
+                    <input type="text" name="assessment_date" value="{{ qaa.proposed_date }}" class="dateinput form-control" required="">
+                  </div>
+                {% endif %}
+                {% if component_form %}
+                  <div class="mb-3">
+                    <h3>Awarded Elements</h3>
+                    {% for comp in component_form %}
+                      <h4>{{ comp.name }}</h4>
+                      {% for elem in comp.elements %}
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="{{ elem.id }}" id="{{ elem.id }}" {% if elem.checked %}checked{% endif %}>
+                        <label class="form-check-label" for="{{ elem.id }}">{{ elem.name }} ({{ elem.score }})</label>
+                      </div>
+                      {% endfor %}
+                    {% endfor %}
+                  </div>
+                {% endif %}
+
+                <div class="d-flex justify-content-center">
+                  <a href="#" class="btn btn-danger" data-toggle="modal" data-target="#modal_reject">Reject</a>
+                  <a href="#" class="btn btn-danger" data-toggle="modal" data-target="#modal_reject_amendment">Reject with Amendments</a>
+                  <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal_accept">
+                    {% if mode == 'review' %}Reviewed{% endif %}
+                    {% if mode == 'verify' %}Verified{% endif %}
+                  </a>
+                </div>
+                
+                <!-- Modal Reject Without Amendment -->
+                <div class="modal fade" id="modal_reject" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Reject Application</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <p class="mb-0">Are you sure you want to reject this application?</p>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" name="reject" class="btn btn-primary">Reject (Without Amendment)</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Modal Reject With Amendment -->
+                <div class="modal fade" id="modal_reject_amendment" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Reject Application (With Amendment)</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <p class="mb-0">Are you sure you want to reject this application (with amendment)?</p>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" name="reject_amendment" class="btn btn-primary">Reject (With Amendment)</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Modal Accept -->
+                <div class="modal fade" id="modal_accept" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Accept Application</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <p class="mb-0">Are you sure you want to accept this application?</p>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" name="accept" class="btn btn-primary">Accept</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      {% endif%}
+    </div>
+
+
+  </div>
+  {% include 'includes/footer-dashboard.html' %}
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <script src="/static/assets/vendor/chart.js/dist/Chart.min.js"></script>
+  <script src="/static/assets/vendor/chart.js/dist/Chart.extension.js"></script>
+
+{% endblock javascripts %}

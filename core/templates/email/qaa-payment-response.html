@@ -1,0 +1,15 @@
+{% autoescape off %}
+Hi CASC Reviewer,
+
+A new transaction has been made for QLASSIC Assessment application.
+
+Project: {{ qaa.pi.project_title }}
+Application Number: {{ qaa.qaa_number }}
+Transaction ID: {{ payment.transaction_id }}
+Transaction Date: {{ payment.payment_date }}
+Amount: RM {{ payment.payment_amount }}
+
+Thank you.
+
+[This is an automated message please do not reply]
+{% endautoescape %}

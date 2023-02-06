@@ -1,0 +1,106 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard - Letter Template {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+  <!-- Header -->
+  <div class="header bg-primary pb-6">
+    <div class="container-fluid">
+      <div class="header-body">
+        <div class="row align-items-center py-4">
+          <div class="col-lg-6 col-7">
+            <h6 class="h2 text-white d-inline-block mb-0">CIDB</h6>
+            <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+              <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboards</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Letter Template</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+        <!-- Card stats -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Page content -->
+  <div class="container-fluid mt--6">
+
+    <div class="row">
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header text-center">
+            <h2 class="mb-0">Add New Letter Template</h2>
+            <p class="mb-0">Letter Template Information</p>
+          </div>
+          <div class="card-body">
+            <form action="" method="POST" enctype="multipart/form-data">
+              {% csrf_token %}
+              {{ form_letter_template|crispy }}
+              <button type="submit" name="create" class="btn btn-primary">Save</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-header text-center">
+            <h2 class="mb-0">Lists</h2>
+          </div>
+          <div class="table-responsive py-4">
+            <table class="table table-custom-simplified table-flush">
+              <thead class="thead-light">
+                <tr>
+                  <th>Title</th>
+                  <th>Template Type</th>
+                  <th>Active</th>
+                  <th>File</th>
+                  <th>Created Date</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for lt in letter_templates %}
+                <tr>
+                  <th>{{ lt.title }}</th>
+                  <th>{{ lt.get_template_type_display }}</th>
+                  <th>{{ lt.is_active }}</th>
+                  <th>{% if lt.template_file %}<a href="{{ lt.template_file.url }}">Download</a>{% else %}-{% endif %}</th>
+                  <th>{{ lt.created_date }}</th>
+                  <td>
+                    <a href="{% url 'dashboard_letter_template_id' lt.id %}" class="btn btn-sm btn-info w-100 mb-2">Edit</a>
+                    <form action="" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="template_type" value="{{ lt.template_type }}">
+                    <input type="hidden" name="id" value="{{ lt.id }}">
+                    {% comment %} <button type="submit" name="test_template" class="btn btn-sm btn-info w-100 mb-2">Test Sample</button> {% endcomment %}
+                    </form>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  {% include 'includes/footer-dashboard.html' %}
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <script src="/static/assets/vendor/chart.js/dist/Chart.min.js"></script>
+  <script src="/static/assets/vendor/chart.js/dist/Chart.extension.js"></script>
+
+{% endblock javascripts %}

@@ -1,0 +1,275 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard - New Claim Application - {{ category_name }} {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+  <!-- Header -->
+  <div class="header bg-primary pb-6">
+    <div class="container-fluid">
+      <div class="header-body">
+        <div class="row align-items-center py-4">
+          <div class="col-lg-6 col-7">
+            <h6 class="h2 text-white d-inline-block mb-0">CIDB</h6>
+            <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+              <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboards</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard_claim_dashboard' role %}">Claim Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">New Claim Application - {{ category_name }}</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+        <!-- Card stats -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Page content -->
+  <div class="container-fluid mt--6">
+
+    <div class="row">
+      <div class="col-md-12">
+        
+        <!-- New Claim -->
+        <div class="card">
+          <div class="card-header text-center">
+            <h2 class="mb-0">New Claim Application - {{ category_name }}
+            </h2>
+          </div>
+        
+          <div class="card-body">
+            <form action="" method="POST" enctype="multipart/form-data">
+              {% csrf_token %}
+              <input type="hidden" name="claim_category" value="{{ category }}">
+              <fieldset>
+
+                <!-- Mileage -->
+                {% if category == "mileage" %}
+                  <div class="form-group">
+                    <label for="">Date*</label>
+                    <input type="text" class="form-control dateinput" name="date_from" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Time*</label>
+                    <div>
+                      <div class="d-inline-flex align-items-center">
+                        <label for="" class="mr-1"><small>From</small></label>
+                        <input type="text" class="form-control timeinput mr-3" name="time_from" required>
+                        <label for="" class="mr-1"><small>To</small></label>
+                        <input type="text" class="form-control timeinput mr-3" name="time_to" required>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="">From*</label>
+                    <div>
+                      <div class="d-flex align-items-center">
+                        <input type="text" class="form-control mr-1" name="location_from" required>
+                        <select class="form-control" name="state_from" id="">
+                          {% for st in state_choices %}
+                            <option value="{{ st.0 }}">{{ st.1 }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Location*</label>
+                    <div>
+                      <div class="d-flex align-items-center">
+                        <input type="text" class="form-control mr-1" name="location_to" required>
+                        <select class="form-control" name="state_to" id="">
+                          {% for st in state_choices %}
+                            <option value="{{ st.0 }}">{{ st.1 }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Distance*</label>
+                    <div>
+                      <div class="d-inline-flex align-items-center">
+                        <input type="text" class="form-control decimal-input mr-3" style="width:100px;" name="mileage" required>
+                        <label for="" class="mr-1"><small>KM</small></label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Zone</label>
+                    <input type="text" class="form-control" name="zone" value="Zone {{ zone }}" readonly required>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Purpose</label>
+                    <textarea class="form-control" name="notes" rows="3" required></textarea>
+                  </div>
+                {% endif %}
+
+                <!-- FI -->
+                {% if category == "fi" %}
+                  <div class="form-group">
+                    <label for="">{% if role == 'assessor' %}Assessment{% endif %}{% if role == 'trainer' %}Training{% endif %} Start Date*</label>
+                    <input type="text" class="form-control dateinput" name="date_from" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="">{% if role == 'assessor' %}Assessment{% endif %}{% if role == 'trainer' %}Training{% endif %} End Date*</label>
+                    <input type="text" class="form-control dateinput" name="date_to" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Zone</label>
+                    <input type="text" class="form-control" name="zone" value="Zone {{ zone }}" readonly required>
+                  </div>
+                {% endif %}
+
+                <!-- Public Transport -->
+                {% if category == "public_transport" %}
+                  <div class="form-group">
+                    <label for="">Type of Transport Used*</label>
+                    <div>
+                      <div class="d-flex align-items-center">
+                        <select class="form-control" name="transport_type" id="">
+                          {% for tt in transport_types %}
+                            <option value="{{ tt.0 }}">{{ tt.1 }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Transaction Date*</label>
+                    <input type="text" class="form-control dateinput" name="date_of_transaction" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Receipt Number*</label>
+                    <input type="text" class="form-control" name="receipt_number" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Receipt Amount*</label>
+                    <div>
+                      <div class="d-inline-flex align-items-center">
+                        <label for="" class="mr-1"><small>RM</small></label>
+                        <input type="text" class="form-control decimal-input" style="width:200px;" name="total_receipt_amount" required>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Upload Receipt*</label>
+                    <input type="file" class="form-control" name="attachments" required>
+                  </div>
+                {% endif %}
+
+                <!-- Accommodation -->
+                {% if category == "accommodation" %}
+                  <div class="form-group">
+                    <label for="">Type of Accommodation*</label>
+                    <div>
+                      <div class="d-flex align-items-center">
+                        <select class="form-control" name="accommodation_type" id="">
+                          {% for at in accommodation_types %}
+                            <option value="{{ at.0 }}">{{ at.1 }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Transaction Date*</label>
+                    <input type="text" class="form-control dateinput" name="date_of_transaction" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Receipt Number*</label>
+                    <input type="text" class="form-control" name="receipt_number" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Receipt Amount*</label>
+                    <div>
+                      <div class="d-inline-flex align-items-center">
+                        <label for="" class="mr-1"><small>RM</small></label>
+                        <input type="text" class="form-control decimal-input" style="width:200px;" name="total_receipt_amount" required>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Upload Receipt*</label>
+                    <input type="file" class="form-control" name="attachments" required>
+                  </div>
+                {% endif %}
+
+                <!-- Accommodation -->
+                {% if category == "others" %}
+                  <div class="form-group">
+                    <label for="">Type*</label>
+                    <input type="text" class="form-control" name="notes" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Transaction Date*</label>
+                    <input type="text" class="form-control dateinput" name="date_of_transaction" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Receipt Number*</label>
+                    <input type="text" class="form-control" name="receipt_number" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Receipt Amount*</label>
+                    <div>
+                      <div class="d-inline-flex align-items-center">
+                        <label for="" class="mr-1"><small>RM</small></label>
+                        <input type="text" class="form-control decimal-input" style="width:200px;" name="total_receipt_amount" required>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Upload Receipt*</label>
+                    <input type="file" class="form-control" name="attachments" required>
+                  </div>
+                {% endif %}
+              </fieldset>
+              <div class="text-right">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal_apply">Apply</button>
+              </div>
+              
+              <!-- Modal Create -->
+              <div class="modal fade" id="modal_apply" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">Apply New {{ category_name }} Claim</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                      <div class="modal-body">
+                        Are you sure you want to apply a new claim?
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" name="apply" class="btn btn-primary">Send</button>
+                      </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+  {% include 'includes/footer-dashboard.html' %}
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <script src="/static/assets/vendor/chart.js/dist/Chart.min.js"></script>
+  <script src="/static/assets/vendor/chart.js/dist/Chart.extension.js"></script>
+
+{% endblock javascripts %}

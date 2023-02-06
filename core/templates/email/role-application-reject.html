@@ -1,0 +1,12 @@
+{% autoescape off %}
+Hi {{ application.user.name }},
+
+We regret to inform you that you didn't get the offer for {{ application.get_application_type_display }} position.
+
+Thank you for your interest in the position and for taking the time to apply this role.
+
+Sincerely,
+CIDB Team
+
+[This is an automated message please do not reply]
+{% endautoescape %}

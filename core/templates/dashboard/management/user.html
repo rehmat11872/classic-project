@@ -1,0 +1,126 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard - Users {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+  <!-- Header -->
+  <div class="header bg-primary pb-6">
+    <div class="container-fluid">
+      <div class="header-body">
+        <div class="row align-items-center py-4">
+          <div class="col-lg-6 col-7">
+            <h6 class="h2 text-white d-inline-block mb-0">CIDB</h6>
+            <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+              <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboards</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Users</li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+        <!-- Card stats -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Page content -->
+  <div class="container-fluid mt--6">
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header text-center">
+            <h2 class="mb-0">User Lists</h2>
+          </div>
+          <div class="d-flex justify-content-center" style="width:100%;">
+            <label class="mr-2 mb-0">Filter by:</label>
+            <form action="" method="GET" style="width:150px;">
+              <select name="role" class="form-control form-control-sm" onchange="this.form.submit()">
+                  <option value="all" {% if role == 'all' %}selected{% endif %}>All</option>
+                  <option value="none" {% if role == 'none' %}selected{% endif %}>None</option>
+                  <option value="superadmin" {% if role == 'superadmin' %}selected{% endif %}>Super Admin</option>
+                  <option value="staff" {% if role == 'staff' %}selected{% endif %}>Staff</option>
+                  <option value="contractor" {% if role == 'contractor' %}selected{% endif %}>Contractor</option>
+                  <option value="assessor" {% if role == 'assessor' %}selected{% endif %}>Assessor</option>
+                  <option value="trainer" {% if role == 'trainer' %}selected{% endif %}>Trainer</option>
+                  <option value="trainee" {% if role == 'trainee' %}selected{% endif %}>Trainee</option>
+                  <option value="applicant" {% if role == 'applicant' %}selected{% endif %}>Applicant</option>
+                  <option value="casc_reviewer" {% if role == 'casc_reviewer' %}selected{% endif %}>CASC Reviewer</option>
+                  <option value="casc_verifier" {% if role == 'casc_verifier' %}selected{% endif %}>CASC Verifier</option>
+                  <option value="casc_approver" {% if role == 'casc_approver' %}selected{% endif %}>CASC Approver</option>
+                  <option value="cidb_reviewer" {% if role == 'cidb_reviewer' %}selected{% endif %}>CIDB Reviewer</option>
+                  <option value="cidb_verifier" {% if role == 'cidb_verifier' %}selected{% endif %}>CIDB Verifier</option>
+                  <option value="cidb_approver" {% if role == 'cidb_approver' %}selected{% endif %}>CIDB Approver</option>
+              </select>
+            </form>
+          </div>
+          <div class="table-responsive py-4">
+            <table class="table table-custom-simplified table-flush">
+              <thead class="thead-light">
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Joined Date</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for user in users %}
+                <tr>
+                  <th>{{ user.code_id }}</th>
+                  <th>{{ user.name }}</th>
+                  <th>{{ user.email }}</th>
+                  <th>{{ user.get_role_display }}</th>
+                  <th>{{ user.created_date }}</th>
+                  <th>{{ user.is_active }}</th>
+                  <td>
+                    <a href="{% url 'dashboard_management_user_id' user.id %}" class="btn btn-sm btn-info w-100 mb-2">Edit Role</button>
+                    <!--<a href="#" data-toggle="modal" data-target="#delete-modal"  class="btn btn-sm btn-danger w-100 mb-2">Delete Role</button> -->
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+<div class="modal fade" id="delete-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLabel">Delete the user</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <div class="modal-body">
+                          <p class="mb-0">Are you sure you want to delete this user?</p>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                          <a href="{% url 'dashboard_management_user_id_delete' user.id %}" class="btn btn-primary">Confirm</a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+  </div>
+  {% include 'includes/footer-dashboard.html' %}
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <script src="/static/assets/vendor/chart.js/dist/Chart.min.js"></script>
+  <script src="/static/assets/vendor/chart.js/dist/Chart.extension.js"></script>
+
+{% endblock javascripts %}
