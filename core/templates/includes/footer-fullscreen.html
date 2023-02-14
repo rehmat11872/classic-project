@@ -6,7 +6,11 @@
         <div class="col-lg-3 col-md-6">
           <div class="d-inline-flex">
               <a class="navbar-brand" href="/">
+                  {% if main_logo.update_footer_logo %}
+                      <img src="{{ main_logo.update_footer_logo.url }}" style="width:110px;">
+                  {% else %}
                 <img src="/static/assets/img/brand/logo-jata-negara.png" style="width:110px;">
+                  {% endif %}
               </a>
               <a class="navbar-brand my-auto" href="/">
                 <img src="/static/assets/img/brand/logo-cidb-malaysia.png" style="width:110px;">

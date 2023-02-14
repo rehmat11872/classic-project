@@ -49,6 +49,7 @@ urlpatterns = [
     
     path('view/assesment/<str:id>/', views.veiw_few_assesment,  name='veiw_few_assesment'),
 
-    path('dashboard/assesment/', views.ListAssesmentView.as_view(), name='list_assesment_data')
+    path('dashboard/assesment/', views.ListAssesmentView.as_view(), name='list_assesment_data'),
+    path('dashboard/assesment/excell/', views.ExportExcel.as_view(), name='assessment_excel')
 
 ]
