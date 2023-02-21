@@ -43,13 +43,16 @@
             <div class="text-center mb-5">
 
                 <a class="navbar-brand" href="/">
+                    {% if logo.update_logo.url %}
                     <img src="{{logo.update_logo.url}}" style="width:110px;">
+                    {% endif %}
                   </a>
              
                 <div>
                     <form action="" method="post" enctype="multipart/form-data">
                         {% csrf_token %}
-                    <p><input type="file" name="update_logo" accept="image/*" class="form-control" id="id_profile_image"></p>
+                    <p>Header Logo<input type="file" name="update_logo" accept="image/*" class="form-control" id="id_profile_image"></p>
+                    <p>Footer Logo<input type="file" name="update_footer_logo" accept="image/*" class="form-control" id="id_profile_image_footer"></p>
                      <button type="submit" class="btn btn-primary">Update Logo</button>
                     </form>
                 </div> 

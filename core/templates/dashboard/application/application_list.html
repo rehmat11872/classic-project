@@ -9,246 +9,343 @@
 
 {% block content %}
 
-  <!-- Header -->
-  <div class="header bg-primary pb-6">
-    <div class="container-fluid">
-      <div class="header-body">
-        <div class="row align-items-center py-4">
-          <div class="col-lg-6 col-7">
-            <h6 class="h2 text-white d-inline-block mb-0">CIDB</h6>
-            <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
-              <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
-                <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
-                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboards</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Application List</li>
-              </ol>
-            </nav>
-          </div>
-        </div>
-        <!-- Card stats -->
-      </div>
-    </div>
-  </div>
-
-  <!-- Page content -->
-  <div class="container-fluid mt--6">
-
-    <div class="row">
-      <div class="col-md-12">
-
-        <!-- All Applications -->
-        <div class="card">
-          <div class="card-header text-center">
-            <h2 class="mb-0">List of Applications</h2>
-            {% if role_type == 'applicant' %}
-              <div class="text-center mt-3">
-                <a href="{{ payment_history_url }}" class="btn btn-primary btn-sm" target="_blank">Payment History</a>
-              </div>
-            {% endif %}
-          </div>
-          <div class="table-responsive py-4">
-            <!-- Table Data Filter -->
-            <div class="d-inline-flex justify-content-center">
-              <label class="mx-2 mb-0">Sector:</label>
-              <select
-                class="form-control form-control-sm mr-2"
-                onchange="FilterTableData(value, 3)">
-                <option value="">ALL</option>
-                <option value="GOVERNMENT">GOVERNMENT</option>
-                <option value="PRIVATE">PRIVATE</option>
-              </select>
-              <label class="mx-2 mb-0">Status:</label>
-              {% if role_type == 'staff' %}
-              <select
-                class="form-control form-control-sm mr-2"
-                onchange="FilterTableData(value, 5)">
-                <option value="">ALL</option>
-                <option value="Pending">Pending</option>
-                <option value="Reviewed">Reviewed</option>
-                <option value="Verified">Verified</option>
-                <option value="Rejected">Rejected</option>
-                <option value="Rejected (With Amendment)">Rejected (With Amendment)</option>
-                <option value="Need Payment">Need Payment</option>
-                <option value="Paid">Paid</option>
-                <option value="Assessor Assigned">Assessor Assigned</option>
-                <option value="Confirm">Confirm</option>
-                <option value="In-Progress">In-Progress</option>
-                <option value="Completed">Completed</option>
-                <option value="Approved">Approved</option>
-              </select>
-              {% endif %}
-              {% if role_type == 'applicant' %}
-              <select
-                class="form-control form-control-sm mr-2"
-                onchange="FilterTableData(value, 5)">
-                <option value="">ALL</option>
-                <option value="Pending">Pending</option>
-                <option value="Rejected">Rejected</option>
-                <option value="Rejected (With Amendment)">Rejected (With Amendment)</option>
-                <option value="Need Payment">Need Payment</option>
-                <option value="On-going">On-going</option>
-                <option value="Completed">Completed</option>
-                <option value="Approved">Approved</option>
-              </select>
-              {% endif %}
+    <!-- Header -->
+    <div class="header bg-primary pb-6">
+        <div class="container-fluid">
+            <div class="header-body">
+                <div class="row align-items-center py-4">
+                    <div class="col-lg-6 col-7">
+                        <h6 class="h2 text-white d-inline-block mb-0">CIDB</h6>
+                        <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                            <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                                <li class="breadcrumb-item"><a href="#"><i class="fas fa-home"></i></a></li>
+                                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboards</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Application List</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+                <!-- Card stats -->
             </div>
-            <table class="table table-custom-simplified table-flush">
-              <thead class="thead-light">
-                <tr>
-                  <th>Application Date</th>
-                  <th>Application Number</th>
-                  <th>Project Title</th>
-                  <th>Sector</th>
-                  <th>Project Value</th>
-                  <th>Status</th>
-                  <th>Payment Status</th>
-                  <th>Downlaod Assesment Data</th>
-                  <th>Edit</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-               
-                {% for qaa in qaas %}
-               
-                  {% if qaa.application_status %}
-                  <tr>
-                    <th>
-                      <span style="font-size:0;">{{ qaa.created_date|date:'Ymd' }}</span>
-                      {{ qaa.created_date|date:'d M Y' }}
-                    </th>
-                    <th>{{ qaa.qaa_number }}</th>
-                    <th>{{ qaa.pi.project_title|truncatechars:150 }}</th>
-                    <th>{{ qaa.pi.get_project_type_display }}</th>
-                    <th>RM {{ qaa.pi.contract_value|intcomma  }}</th>
-                    <th>
-                      {% if role_type == 'staff' %}
-                        {{ qaa.get_application_status_display }}
-                      {% endif %}
-                      {% if role_type == 'applicant' %}
-                        {% if qaa.application_status == 'need_payment' %}
-                          {{ qaa.get_application_status_display }}
-                        {% elif qaa.application_status == 'rejected' %}
-                          {{ qaa.get_application_status_display }}
-                        {% elif qaa.application_status == 'rejected_amendment' %}
-                          {{ qaa.get_application_status_display }}
-                        {% elif qaa.application_status == 'approved' %}
-                          {{ qaa.get_application_status_display }}
-                        {% elif qaa.application_status == 'in_progress' %}
-                          On-going
-                        {% elif qaa.application_status == 'completed' %}
-                          {{ qaa.get_application_status_display }}
-                        {% else %}
-                          Pending
-                        {% endif %}
-                      {% endif %}
-                    </th>
-                    <td>
-                      {{ qaa.get_payment_status_display }}
-                    </td>
-                   
-                    <td><a   href="{% url 'download_excel_view' %}" type="button">Download</a></td>
-                    <td><button type="button" class="btn btn-sm btn-success w-100 mb-2"><a href="{% url 'edit_app' qaa.pk %}">Edit</a></button></td>
-                    <td>
-                      <a href="{% url 'dashboard_application_info' qaa.id %}" class="btn btn-sm btn-info w-100 mb-2">View</a>
-                      {% if role_type == 'staff' %}
-                        <!-- Staff button -->
-                        {% if request.user.role == 'casc_reviewer' or request.user.role == 'superadmin' %}
-                          {% if qaa.application_status == 'pending' %}
-                          <a href="{% url 'dashboard_application_review' qaa.id %}" class="btn btn-sm btn-success w-100 mb-2">Review</a>
-                          {% endif %}
-                        {% endif %}
-                        {% if request.user.role == 'casc_verifier' or request.user.role == 'superadmin' %}
-                          {% if qaa.application_status == 'reviewed' %}
-                          <a href="{% url 'dashboard_application_verify' qaa.id %}" class="btn btn-sm btn-success w-100 mb-2">Verify</a>
-                          {% endif %}
-                        {% endif %}
-                      {% endif %}
-
-                      {% if role_type == 'applicant' %}
-                        <!-- Applicant button -->
-                        {% if qaa.application_status == 'rejected_amendment' or qaa.application_status == 'rejected' %}
-                          {% if qaa.pi %}
-                            <a href="{% url 'dashboard_application_new' qaa.pi.contractor_cidb_registration_no qaa.pi.project_reference_number %}" class="btn btn-sm btn-success w-100 mb-2">Reapply</a>
-                          {% endif %}
-                        {% endif %}
-                        {% if qaa.application_status == 'need_payment' %}
-                          {% comment %} <a href="{% url 'dashboard_application_payment' qaa.id %}" class="btn btn-sm btn-success w-100 mb-2">Pay</a> {% endcomment %}
-                          <button onclick="ajax_payment_request('{{ qaa.id }}');" class="btn btn-sm btn-success w-100 mb-2">Pay</button>
-                        {% endif %}
-                      {% endif %}
-                    </td>
-                  </tr>
-                  {% endif %}
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
         </div>
-      </div>
     </div>
-    <form id="form_payment" action="" method="POST">
-      <input type="hidden" name="ClientReturnURL">
-      <input type="hidden" name="IcOrRoc">
-      <input type="hidden" name="OrderID">
-      <input type="hidden" name="Currency">
-      <input type="hidden" name="TransactionType">
-      <input type="hidden" name="ClientRef0">
-      <input type="hidden" name="ClientRef1">
-      <input type="hidden" name="ClientRef2">
-      <input type="hidden" name="ClientRef3">
-      <input type="hidden" name="ClientRef4">
-      <input type="hidden" name="Amount">
-      <input type="hidden" name="CustomerName">
-      <input type="hidden" name="CustomerEmail">
-      <input type="hidden" name="CustomerPhoneNo">
-    </form>
 
-  </div>
-  {% include 'includes/footer-dashboard.html' %}
+    <!-- Page content -->
+    <div class="container-fluid mt--6">
+
+        <div class="row">
+            <div class="col-md-12">
+
+                <!-- All Applications -->
+                <div class="card">
+                    <div class="card-header text-center">
+                        <h2 class="mb-0">List of Applications</h2>
+                        {% if role_type == 'applicant' %}
+                            <div class="text-center mt-3">
+                                <a href="{{ payment_history_url }}" class="btn btn-primary btn-sm" target="_blank">Payment
+                                    History</a>
+                            </div>
+                        {% endif %}
+                    <div class="text-center mt-3">
+                    <form method="get" action="{% url 'assessment_excel' %}">
+                                        <button type="submit" class="btn btn-primary btn-sm">Download Excell</button>
+                                    </form>
+                </div>
+
+                    </div>
+                    <div class="table-responsive py-4">
+                        <!-- Table Data Filter -->
+                        <div class="d-inline-flex justify-content-center">
+                            <label class="mx-2 mb-0">Sector:</label>
+                            <select
+                                    class="form-control form-control-sm mr-2"
+                                    onchange="FilterTableData(value, 3)">
+                                <option value="">ALL</option>
+                                <option value="GOVERNMENT">GOVERNMENT</option>
+                                <option value="PRIVATE">PRIVATE</option>
+                            </select>
+                            <label class="mx-2 mb-0">Status:</label>
+                            {% if role_type == 'staff' %}
+                                <select
+                                        class="form-control form-control-sm mr-2"
+                                        onchange="FilterTableData(value, 5)">
+                                    <option value="">ALL</option>
+                                    <option value="Pending">Pending</option>
+                                    <option value="Reviewed">Reviewed</option>
+                                    <option value="Verified">Verified</option>
+                                    <option value="Rejected">Rejected</option>
+                                    <option value="Rejected (With Amendment)">Rejected (With Amendment)</option>
+                                    <option value="Need Payment">Need Payment</option>
+                                    <option value="Paid">Paid</option>
+                                    <option value="Assessor Assigned">Assessor Assigned</option>
+                                    <option value="Confirm">Confirm</option>
+                                    <option value="In-Progress">In-Progress</option>
+                                    <option value="Completed">Completed</option>
+                                    <option value="Approved">Approved</option>
+                                </select>
+                            {% endif %}
+                            {% if role_type == 'applicant' %}
+                                <select
+                                        class="form-control form-control-sm mr-2"
+                                        onchange="FilterTableData(value, 5)">
+                                    <option value="">ALL</option>
+                                    <option value="Pending">Pending</option>
+                                    <option value="Rejected">Rejected</option>
+                                    <option value="Rejected (With Amendment)">Rejected (With Amendment)</option>
+                                    <option value="Need Payment">Need Payment</option>
+                                    <option value="On-going">On-going</option>
+                                    <option value="Completed">Completed</option>
+                                    <option value="Approved">Approved</option>
+                                </select>
+                            {% endif %}
+                        </div>
+                        <table class="table table-custom-simplified table-flush">
+                            <thead class="thead-light">
+                            <tr>
+                                {% if request.user.role == 'contractor' %}
+                                    <th>Child Object</th>
+                                {% endif %}
+                                <th>Application Date</th>
+                                <th>Application Number</th>
+                                <th>Project Title</th>
+                                <th>Sector</th>
+                                <th>Project Value</th>
+                                <th>Status</th>
+                                <th>Payment Status</th>
+                                <th>Downlaod Assesment Data</th>
+                                <th>Edit</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            {% for qaa in qaas %}
+
+                                {% if qaa.application_status %}
+                                    <tr>
+
+                                    <td>
+
+
+                                        <!-- Button trigger modal -->
+                                        {% if request.user.role == 'contractor' %}
+                                            <button type="button" class="btn btn-sm btn-success w-100 mb-2"
+                                                    data-toggle="modal" data-target="#project-{{ qaa.id }}">
+                                                child
+                                            </button>
+                                        {% endif %}
+
+                                        <!-- Modal -->
+                                        <div class="modal fade" id="project-{{ qaa.id }}" tabindex="-1" role="dialog"
+                                             aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLongTitle">Project
+                                                            Info</h5>
+                                                        <button type="button" class="close" data-dismiss="modal"
+                                                                aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form method="post">
+                                                            {% csrf_token %}
+                                                            <input type="text" name="project_title_child"
+                                                                   class="form-control" placeholder="Project Title">
+                                                            <input type="text" name="project_value_child"
+                                                                   class="form-control mt-3" placeholder="Value">
+                                                            <input type="text" name="parent_object" hidden
+                                                                   value="{{ qaa.pi.id }}" class="form-control mt-3"
+                                                                   placeholder="Value">
+                                                            <button type="submit" class="btn btn-primary mt-3">Submit
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                    </td>
+                                    <td style="text-align: center;min-width:150px;">
+
+                                        <span style="font-size:0;">{{ qaa.created_date|date:'Ymd' }}</span>
+                                        {{ qaa.created_date|date:'d M Y' }}
+                                        {% if qaa.pi.get_child_objects %}
+                                            {% for title in qaa.pi.get_child_objects.all %}
+                                        <div class="subEntrySec" style="border-left:1px dotted #ccc;">
+                                        <h5 style="color:#2dce89;margin:10px 0px 5px;border-bottom:1px dotted #ccc;">Title</h5>
+                                        <small>{{ title.project_title }}</small>
+                                            </div>
+                                            {% endfor %}
+                                            {% endif %}
+                                    </td>
+                                    <td style="text-align: center;min-width:150px;">{{ qaa.qaa_number }}
+                                        {% if qaa.pi.get_child_objects %}
+                                            {% for title in qaa.pi.get_child_objects.all %}
+                                     <div class="subEntrySec" style="border-left:1px dotted #ccc;">
+                                        <h5 style="color:#2dce89;margin:10px 0px 5px;border-bottom:1px dotted #ccc;">Value</h5>
+                                        <small>{{ title.value }}</small>
+                                            </div>
+
+                                            {% endfor %}
+                                            {% endif %}
+                                            </td>
+                                    <td style="text-align: center;min-width:150px;">{{ qaa.pi.project_title|truncatechars:150 }}
+                                        {% if qaa.pi.get_child_objects %}
+                                            {% for title in qaa.pi.get_child_objects.all %}
+                                     <div class="subEntrySec" style="border-left:1px dotted #ccc;">
+                                        <h5 style="color:#2dce89;margin:10px 0px 5px;border-bottom:1px dotted #ccc;">Detail</h5>
+                                        <small><a href="{% url 'dashboard_application_info_child' qaa.id title.id forloop.counter %}" type="button" class="btn btn-sm btn-success w-100 mb-2">View</a> </small>
+                                            </div>
+                                            {% endfor %}
+                                            {% endif %}
+                                            </td>
+                                    <td>{{ qaa.pi.get_project_type_display }}</td>
+                                    <td>RM {{ qaa.pi.contract_value|intcomma }}</td>
+                                    <td>
+                                        {% if role_type == 'staff' %}
+                                            {{ qaa.get_application_status_display }}
+                                        {% endif %}
+                                        {% if role_type == 'applicant' %}
+                                            {% if qaa.application_status == 'need_payment' %}
+                                                {{ qaa.get_application_status_display }}
+                                            {% elif qaa.application_status == 'rejected' %}
+                                                {{ qaa.get_application_status_display }}
+                                            {% elif qaa.application_status == 'rejected_amendment' %}
+                                                {{ qaa.get_application_status_display }}
+                                            {% elif qaa.application_status == 'approved' %}
+                                                {{ qaa.get_application_status_display }}
+                                            {% elif qaa.application_status == 'in_progress' %}
+                                                On-going
+                                            {% elif qaa.application_status == 'completed' %}
+                                                {{ qaa.get_application_status_display }}
+                                            {% else %}
+                                                Pending
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ qaa.get_payment_status_display }}
+                                    </td>
+
+                                    <td><a href="{% url 'download_excel_view' %}" type="button">Download</a></td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-success w-100 mb-2"><a
+                                                href="{% url 'edit_app' qaa.pk %}">Edit</a></button>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'dashboard_application_info' qaa.id %}"
+                                           class="btn btn-sm btn-info w-100 mb-2">View</a>
+                                        {% if role_type == 'staff' %}
+                                            <!-- Staff button -->
+                                            {% if request.user.role == 'casc_reviewer' or request.user.role == 'superadmin' %}
+                                                {% if qaa.application_status == 'pending' %}
+                                                    <a href="{% url 'dashboard_application_review' qaa.id %}"
+                                                       class="btn btn-sm btn-success w-100 mb-2">Review</a>
+                                                {% endif %}
+                                            {% endif %}
+                                            {% if request.user.role == 'casc_verifier' or request.user.role == 'superadmin' %}
+                                                {% if qaa.application_status == 'reviewed' %}
+                                                    <a href="{% url 'dashboard_application_verify' qaa.id %}"
+                                                       class="btn btn-sm btn-success w-100 mb-2">Verify</a>
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endif %}
+
+                                        {% if role_type == 'applicant' %}
+                                            <!-- Applicant button -->
+                                            {% if qaa.application_status == 'rejected_amendment' or qaa.application_status == 'rejected' %}
+                                                {% if qaa.pi %}
+                                                    <a href="{% url 'dashboard_application_new' qaa.pi.contractor_cidb_registration_no qaa.pi.project_reference_number %}"
+                                                       class="btn btn-sm btn-success w-100 mb-2">Reapply</a>
+                                                {% endif %}
+                                            {% endif %}
+                                            {% if qaa.application_status == 'need_payment' %}
+                                                {% comment %} <a href="{% url 'dashboard_application_payment' qaa.id %}" class="btn btn-sm btn-success w-100 mb-2">Pay</a> {% endcomment %}
+                                                <button onclick="ajax_payment_request('{{ qaa.id }}');"
+                                                        class="btn btn-sm btn-success w-100 mb-2">Pay
+                                                </button>
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+
+
+                                    </td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <form id="form_payment" action="" method="POST">
+            <input type="hidden" name="ClientReturnURL">
+            <input type="hidden" name="IcOrRoc">
+            <input type="hidden" name="OrderID">
+            <input type="hidden" name="Currency">
+            <input type="hidden" name="TransactionType">
+            <input type="hidden" name="ClientRef0">
+            <input type="hidden" name="ClientRef1">
+            <input type="hidden" name="ClientRef2">
+            <input type="hidden" name="ClientRef3">
+            <input type="hidden" name="ClientRef4">
+            <input type="hidden" name="Amount">
+            <input type="hidden" name="CustomerName">
+            <input type="hidden" name="CustomerEmail">
+            <input type="hidden" name="CustomerPhoneNo">
+        </form>
+
+    </div>
+    {% include 'includes/footer-dashboard.html' %}
 
 {% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
-  <script>
-   function ajax_payment_request(id) {
-    $.ajax({
-      method: "POST",
-      headers:{
-          "X-CSRFToken": "{{ csrf_token }}"
-      },
-      url: "{% url 'ajax_api_application_payment_request' %}",
-      data: {
-        "id":id
-      },
-      dataType: 'json',
-      success: function (data) {
-        if (data.result == "PASS") {
-          $("#form_payment").attr("action", data.payment_gateway_url);;
-          $("input[name='ClientReturnURL']").val(data.ClientReturnURL);
-          $("input[name='IcOrRoc']").val(data.IcOrRoc);
-          $("input[name='OrderID']").val(data.OrderID);
-          $("input[name='Currency']").val(data.Currency);
-          $("input[name='TransactionType']").val(data.TransactionType);
-          $("input[name='ClientRef0']").val(data.ClientRef0);
-          $("input[name='ClientRef1']").val(data.ClientRef1);
-          $("input[name='ClientRef2']").val(data.ClientRef2);
-          $("input[name='ClientRef3']").val(data.ClientRef3);
-          $("input[name='ClientRef4']").val(data.ClientRef4);
-          $("input[name='Amount']").val(data.Amount);
-          $("input[name='CustomerName']").val(data.CustomerName);
-          $("input[name='CustomerEmail']").val(data.CustomerEmail);
-          $("input[name='CustomerPhoneNo']").val(data.CustomerPhoneNo);
-          $("#form_payment").submit();
-        } else {
-          alert("Problem creating the proforma. Please check with the admin :"+ data.error);
+    <script>
+        function ajax_payment_request(id) {
+            $.ajax({
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                url: "{% url 'ajax_api_application_payment_request' %}",
+                data: {
+                    "id": id
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.result == "PASS") {
+                        $("#form_payment").attr("action", data.payment_gateway_url);
+                        ;
+                        $("input[name='ClientReturnURL']").val(data.ClientReturnURL);
+                        $("input[name='IcOrRoc']").val(data.IcOrRoc);
+                        $("input[name='OrderID']").val(data.OrderID);
+                        $("input[name='Currency']").val(data.Currency);
+                        $("input[name='TransactionType']").val(data.TransactionType);
+                        $("input[name='ClientRef0']").val(data.ClientRef0);
+                        $("input[name='ClientRef1']").val(data.ClientRef1);
+                        $("input[name='ClientRef2']").val(data.ClientRef2);
+                        $("input[name='ClientRef3']").val(data.ClientRef3);
+                        $("input[name='ClientRef4']").val(data.ClientRef4);
+                        $("input[name='Amount']").val(data.Amount);
+                        $("input[name='CustomerName']").val(data.CustomerName);
+                        $("input[name='CustomerEmail']").val(data.CustomerEmail);
+                        $("input[name='CustomerPhoneNo']").val(data.CustomerPhoneNo);
+                        $("#form_payment").submit();
+                    } else {
+                        alert("Problem creating the proforma. Please check with the admin :" + data.error);
+                    }
+                }
+            });
         }
-      }
-    });
-   }
-  </script>
+    </script>
 
-  <script src="/static/assets/vendor/chart.js/dist/Chart.min.js"></script>
-  <script src="/static/assets/vendor/chart.js/dist/Chart.extension.js"></script>
+    <script src="/static/assets/vendor/chart.js/dist/Chart.min.js"></script>
+    <script src="/static/assets/vendor/chart.js/dist/Chart.extension.js"></script>
 {% endblock javascripts %}

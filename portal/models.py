@@ -140,6 +140,7 @@ class LetterTemplateConfiguration(models.Model):
 class UpdateInformation(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
     update_logo = models.FileField(null=True, blank=True, upload_to=PathAndRename('logo'), validators=[file_size_validator])
+    update_footer_logo = models.FileField(null=True, blank=True, upload_to=PathAndRename('logo'), validators=[file_size_validator])
     update_hyperlink = models.URLField(null=True, blank=True, max_length=2000)
     update_address = models.TextField(null=True, blank=True, max_length=5000)
 
