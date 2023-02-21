@@ -164,6 +164,9 @@ class ProjectInfo(models.Model):
     modified_by = models.CharField(null=True, max_length=50)
     parent_obj = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
     value = models.PositiveIntegerField(null=True, blank=True)
+
+    def get_child_objects(self):
+        return ProjectInfo.objects.filter(parent_obj=self)
    
     def __str__(self):
         return '%s' % (self.project_title)

@@ -123,10 +123,8 @@
 
                                 {% if qaa.application_status %}
                                     <tr>
-                                    <tr>
 
-                                    </tr>
-                                    <th>
+                                    <td>
 
 
                                         <!-- Button trigger modal -->
@@ -169,17 +167,44 @@
                                         </div>
 
 
-                                    </th>
-                                    <th>
+                                    </td>
+                                    <td style="text-align: center;min-width:150px;">
 
                                         <span style="font-size:0;">{{ qaa.created_date|date:'Ymd' }}</span>
                                         {{ qaa.created_date|date:'d M Y' }}
-                                    </th>
-                                    <th>{{ qaa.qaa_number }}</th>
-                                    <th>{{ qaa.pi.project_title|truncatechars:150 }}</th>
-                                    <th>{{ qaa.pi.get_project_type_display }}</th>
-                                    <th>RM {{ qaa.pi.contract_value|intcomma }}</th>
-                                    <th>
+                                        {% if qaa.pi.get_child_objects %}
+                                            {% for title in qaa.pi.get_child_objects.all %}
+                                        <div class="subEntrySec" style="border-left:1px dotted #ccc;">
+                                        <h5 style="color:#2dce89;margin:10px 0px 5px;border-bottom:1px dotted #ccc;">Title</h5>
+                                        <small>{{ title.project_title }}</small>
+                                            </div>
+                                            {% endfor %}
+                                            {% endif %}
+                                    </td>
+                                    <td style="text-align: center;min-width:150px;">{{ qaa.qaa_number }}
+                                        {% if qaa.pi.get_child_objects %}
+                                            {% for title in qaa.pi.get_child_objects.all %}
+                                     <div class="subEntrySec" style="border-left:1px dotted #ccc;">
+                                        <h5 style="color:#2dce89;margin:10px 0px 5px;border-bottom:1px dotted #ccc;">Value</h5>
+                                        <small>{{ title.value }}</small>
+                                            </div>
+
+                                            {% endfor %}
+                                            {% endif %}
+                                            </td>
+                                    <td style="text-align: center;min-width:150px;">{{ qaa.pi.project_title|truncatechars:150 }}
+                                        {% if qaa.pi.get_child_objects %}
+                                            {% for title in qaa.pi.get_child_objects.all %}
+                                     <div class="subEntrySec" style="border-left:1px dotted #ccc;">
+                                        <h5 style="color:#2dce89;margin:10px 0px 5px;border-bottom:1px dotted #ccc;">Detail</h5>
+                                        <small><a href="{% url 'dashboard_application_info_child' qaa.id title.id forloop.counter %}" type="button" class="btn btn-sm btn-success w-100 mb-2">View</a> </small>
+                                            </div>
+                                            {% endfor %}
+                                            {% endif %}
+                                            </td>
+                                    <td>{{ qaa.pi.get_project_type_display }}</td>
+                                    <td>RM {{ qaa.pi.contract_value|intcomma }}</td>
+                                    <td>
                                         {% if role_type == 'staff' %}
                                             {{ qaa.get_application_status_display }}
                                         {% endif %}
@@ -200,7 +225,7 @@
                                                 Pending
                                             {% endif %}
                                         {% endif %}
-                                    </th>
+                                    </td>
                                     <td>
                                         {{ qaa.get_payment_status_display }}
                                     </td>

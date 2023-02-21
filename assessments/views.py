@@ -490,11 +490,13 @@ def dashboard_application_review(request, id):
     form_review = QAAReviewForm(instance=qaa)
 
     supporting_documents = get_supporting_documents(qaa)
+    assessor = Assessor.objects.filter(user=request.user).first()
     context = {
         'mode': mode,
         'qaa': qaa,
         'form_review': form_review,
-        'supporting_documents': supporting_documents
+        'supporting_documents': supporting_documents,
+        'assessor': assessor
     }
 
     # Add special element that sub_component type is zero
@@ -688,7 +690,6 @@ def dashboard_application_verify(request, id):
 
 @login_required(login_url="/login/")
 def dashboard_application_list(request):
-    print("hello boss")
     qaas = None
     role_display_staff = [
         'superadmin',
@@ -1875,3 +1876,27 @@ class ExportExcel(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         response = CreateExcell().excel_view(request)
         return response
+
+
+@login_required(login_url="/login/")
+def dashboard_application_info_for_child(request, id, pk, counter):
+    if request.method == "POST":
+        obj = QlassicAssessmentApplication.objects.filter(id=id).first()
+        date = request.POST.get('get_date')
+        datetime_object = datetime.datetime.strptime(date, '%d/%m/%Y')
+        obj.proposed_date = datetime_object
+        obj.save()
+    mode = ''
+    qaa = get_object_or_404(QlassicAssessmentApplication, id=id)
+    qaas_child = get_object_or_404(ProjectInfo, id=pk)
+    supporting_documents = get_supporting_documents(qaa)
+    context = {
+        'role': request.user.role,
+        'mode': mode,
+        'qaa': qaa,
+        'supporting_documents': supporting_documents,
+        "child": qaas_child,
+        "counter":counter
+    }
+
+    return render(request, "dashboard/application/application_info.html", context)

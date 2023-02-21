@@ -18,6 +18,7 @@ urlpatterns = [
     path('dashboard/application/profile/', views.dashboard_application_profile, name="dashboard_application_profile"),
     path('dashboard/application/project/', views.dashboard_application_project, name="dashboard_application_project"),
     path('dashboard/application/info/<str:id>/', views.dashboard_application_info, name="dashboard_application_info"),
+    path('dashboard/application/info/child/<str:id>/<str:pk>/<str:counter>/', views.dashboard_application_info_for_child, name="dashboard_application_info_child"),
     path('dashboard/application/info/<str:id>/<str:assessor_mode>/assessment/', views.dashboard_application_info_assessor, name="dashboard_application_info_assessor"),
     path('dashboard/application/review/<str:id>/', views.dashboard_application_review, name="dashboard_application_review"),
     path('dashboard/application/verify/<str:id>/', views.dashboard_application_verify, name="dashboard_application_verify"),
