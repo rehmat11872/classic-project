@@ -46,6 +46,7 @@ ALLOWED_HOSTS = [
     'cidb-qlassic.pipe.my',
     'cidb-qlassic.herokuapp.com',
     'localhost:8000',
+    'ec32-119-155-25-63.ngrok.io'
 ]
 
 SITE_ID = config('SITE_ID', default=1)
