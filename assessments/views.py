@@ -449,6 +449,7 @@ def dashboard_application_info(request, id):
     if request.method == "POST":
         obj = QlassicAssessmentApplication.objects.filter(id=id).first()
         date = request.POST.get('get_date')
+        print(date, 'date________:::::')
         datetime_object = datetime.datetime.strptime(date, '%d/%m/%Y')
         obj.proposed_date = datetime_object
         obj.save()
@@ -467,10 +468,19 @@ def dashboard_application_info(request, id):
 
 @login_required(login_url="/login/")
 def dashboard_application_info_assessor(request, id, assessor_mode):
+   
     mode = ''
+   
 
     qaa = get_object_or_404(QlassicAssessmentApplication, id=id)
     supporting_documents = get_supporting_documents(qaa)
+    if request.method == "POST":
+        obj = QlassicAssessmentApplication.objects.filter(id=id).first()
+        date = request.POST.get('get_date')
+        datetime_object = datetime.datetime.strptime(date, '%d/%m/%Y')
+        obj.proposed_date = datetime_object
+        obj.save()
+        return redirect('dashboard_application_info_assessor', id=id, assessor_mode=assessor_mode)
     context = {
         'mode': mode,
         'assessor_view': True,
@@ -709,16 +719,12 @@ def dashboard_application_list(request):
 
     role_type = ''
     if request.user.role in role_display_staff:
-        print('if')
         role_type = 'staff'
         qaas = QlassicAssessmentApplication.objects.all().order_by('-created_date')
-        print(qaas, '________qasssss::::::::')
     elif request.user.role in role_display_applicant:
-        print('elif')
         role_type = 'applicant'
         qaas = QlassicAssessmentApplication.objects.all().filter(user=request.user).order_by('-created_date')
     else:
-        print('else')
         messages.warning(request,
                          "Please write us a letter and email at casc@cream.my for verification purpose. Download template letter at Homepage>Publication (click CIDB's logo)")
         qaas = None
@@ -1719,6 +1725,7 @@ def addproject(request):
 
 
 class AddProjectCreateView(CreateView):
+    print('this view is under running')
     form_class = AddProjectForm
     template_name = "dashboard/application/project_list.html"
     model = Contractor
@@ -1726,7 +1733,7 @@ class AddProjectCreateView(CreateView):
     def form_valid(self, form):
         form.save()
         print(form.errors)
-        messages.success(self.request, "Program Category Added Successfully")
+        messages.success(self.request, "Contractors Added Successfully")
         self.object = form.save()
         return super().form_valid(form)
 
@@ -1800,6 +1807,38 @@ def excel_view(request):
     work_sheet.write(0, 8, 'Ptotal:', style_head_row)
     work_sheet.write(0, 9, 'stotal:', style_head_row)
     work_sheet.write(0, 10, 'ctotal:', style_head_row)
+    work_sheet.write(0, 11, 'architectural_work:', style_head_row)
+    work_sheet.write(0, 12, 'floor_finishes:', style_head_row)
+    work_sheet.write(0, 13, 'internal_wall:', style_head_row)
+    work_sheet.write(0, 14, 'ceiling:', style_head_row)
+    work_sheet.write(0, 15, 'door:', style_head_row)
+    work_sheet.write(0, 16, 'window:', style_head_row)
+    work_sheet.write(0, 17, 'internal_fixtures:', style_head_row)
+    work_sheet.write(0, 18, 'roof:', style_head_row)
+    work_sheet.write(0, 19, 'external_wall:', style_head_row)
+    work_sheet.write(0, 20, 'apron_perimeter_drain:', style_head_row)
+    work_sheet.write(0, 21, 'car_park:', style_head_row)
+    work_sheet.write(0, 22, 'material_functional_test:', style_head_row)
+    work_sheet.write(0, 23, 'total:', style_head_row)
+    work_sheet.write(0, 24, 'me_fittings:', style_head_row)
+    work_sheet.write(0, 25, 'mock_up_score:', style_head_row)
+    work_sheet.write(0, 26, 'qlassic_score:', style_head_row)
+    work_sheet.write(0, 27, 'created_by:', style_head_row)
+    work_sheet.write(0, 28, 'modified_by:', style_head_row)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     # Generate worksheet data row data.
     row = 1
@@ -1815,6 +1854,26 @@ def excel_view(request):
         work_sheet.write(row, 8, data.ptotal)
         work_sheet.write(row, 9, data.stotal)
         work_sheet.write(row, 10, data.ctotal)
+        work_sheet.write(row, 11, data.architectural_work)
+        work_sheet.write(row, 12, data.floor_finishes)
+        work_sheet.write(row, 13, data.internal_wall)
+        work_sheet.write(row, 14, data.ceiling)
+        work_sheet.write(row, 15, data.door)
+        work_sheet.write(row, 16, data.window)
+        work_sheet.write(row, 17, data.internal_fixtures)
+        work_sheet.write(row, 18, data.roof)
+        work_sheet.write(row, 19, data.external_wall)
+        work_sheet.write(row, 20, data.apron_perimeter_drain)
+        work_sheet.write(row, 21, data.car_park)
+        work_sheet.write(row, 22, data.material_functional_test)
+        work_sheet.write(row, 23, data.total)
+        work_sheet.write(row, 24, data.me_fittings)
+        work_sheet.write(row, 25, data.mock_up_score)
+        work_sheet.write(row, 26, data.qlassic_score)
+        work_sheet.write(row, 27, data.created_by)
+        work_sheet.write(row, 28, data.modified_by)
+
+
 
         row = row + 1
 

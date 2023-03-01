@@ -191,12 +191,32 @@ class AddProjectForm(ModelForm):
     class Meta:
         model = Contractor
         fields = (
+            'name_of_contractor',
+            'contractor_registration_number',
+            'contractor_registration_grade',
+            'project_type',
+            'contract_type',
+            'levy_number',
+            'ssm_number',
+            'contract_value',
             'project_title',
+            'project_location',
+            'project_reference_number',
             'project_status',
             'client_name',
             'letter_of_award_date',
             'start_date',
             'dateline',
+            'registered_address',
+            'registered_postcode',
+            'registered_city',
+            'registered_state',
+            'correspondence_address',
+            'correspondence_postcode',
+            'correspondence_city',
+            'correspondence_state',
+            'created_by',
+            'modified_by'
         )
 
 class ViewProjectForm(ModelForm):
