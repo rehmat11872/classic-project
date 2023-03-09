@@ -35,39 +35,39 @@ def get_project(contractor_registration_number):
    
     check_applied_contractor(contractor_registration_number)
     contractors = Contractor.objects.all().filter(contractor_registration_number=contractor_registration_number)
-    # contractors.delete()
-    # cims_contractor, cims_projects, grade = request_contractor(contractor_registration_number)
-    # if cims_projects != None:
-    #     for data in cims_projects:
-    #         try:
-    #             Contractor.objects.create(
-    #                 name_of_contractor = cims_contractor.companyName,
-    #                 contractor_registration_number = cims_contractor.ppkRegistrationNumber,
-    #                 contractor_registration_grade = grade,
-    #                 ssm_number = cims_contractor.ssmNo,
-    #                 contract_value = data.Value,
-    #                 project_title = data.Name,
-    #                 project_status = data.Name,
-    #                 project_location = data.Location,
-    #                 project_reference_number = data.Id,
-    #                 letter_of_award_date = data.LOADate,
-    #                 start_date = data.StartDate,
-    #                 dateline = data.EndDate,
-    #                 client_name = data.ClientName,
-    #                 registered_address = cims_contractor.registeredAddress,
-    #                 registered_postcode = cims_contractor.registeredPostcode,
-    #                 registered_city = cims_contractor.registeredTown,
-    #                 registered_state = cims_contractor.registeredState,
-    #                 correspondence_address = cims_contractor.correspondenceAddress,
-    #                 correspondence_postcode = cims_contractor.correspondencePostcode,
-    #                 correspondence_city = cims_contractor.correspondenceTown,
-    #                 correspondence_state = cims_contractor.correspondenceState,
-    #             )
-    #             check_applied_contractor(contractor_registration_number)
-    #             contractors = Contractor.objects.all().filter(contractor_registration_number=contractor_registration_number)
-    #         except Exception as e:
-    #             print("error", e)
-    #             pass
+    contractors.delete()
+    cims_contractor, cims_projects, grade = request_contractor(contractor_registration_number)
+    if cims_projects != None:
+        for data in cims_projects:
+            try:
+                Contractor.objects.create(
+                    name_of_contractor = cims_contractor.companyName,
+                    contractor_registration_number = cims_contractor.ppkRegistrationNumber,
+                    contractor_registration_grade = grade,
+                    ssm_number = cims_contractor.ssmNo,
+                    contract_value = data.Value,
+                    project_title = data.Name,
+                    project_status = data.Name,
+                    project_location = data.Location,
+                    project_reference_number = data.Id,
+                    letter_of_award_date = data.LOADate,
+                    start_date = data.StartDate,
+                    dateline = data.EndDate,
+                    client_name = data.ClientName,
+                    registered_address = cims_contractor.registeredAddress,
+                    registered_postcode = cims_contractor.registeredPostcode,
+                    registered_city = cims_contractor.registeredTown,
+                    registered_state = cims_contractor.registeredState,
+                    correspondence_address = cims_contractor.correspondenceAddress,
+                    correspondence_postcode = cims_contractor.correspondencePostcode,
+                    correspondence_city = cims_contractor.correspondenceTown,
+                    correspondence_state = cims_contractor.correspondenceState,
+                )
+                check_applied_contractor(contractor_registration_number)
+                contractors = Contractor.objects.all().filter(contractor_registration_number=contractor_registration_number)
+            except Exception as e:
+                print("error", e)
+                pass
     
     return contractors
 
