@@ -372,10 +372,14 @@ def updateinfoview(request):
 
     else:
         update_info_footer = UpdateInformation.objects.filter(user=request.user).first()
-
+    
+    main_logo = UpdateInformation.objects.filter(user=request.user).first()
+    print(main_logo, "print(main_logo)")
     context = {
-        'update_info': update_info_footer
+        'update_info': update_info_footer,
+        'main_logo': main_logo
     }
+    
     return render(request, "update_info.html", context)
 
 
