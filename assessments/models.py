@@ -920,5 +920,14 @@ class Scope(models.Model):
 
     def __str__(self):
         return self.scope
-    
 
+
+class Survey(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
+    email = models.EmailField(max_length=100, null=True, blank=True)
+    name = models.CharField(max_length=50, null=True, blank=True)
+    comment = models.TextField()
+
+    def __str__(self):
+        return self.user.email
+    

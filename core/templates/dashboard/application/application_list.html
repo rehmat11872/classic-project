@@ -231,10 +231,12 @@
                                     </td>
 
                                     <td><a href="{% url 'download_excel_view' %}" type="button">Download</a></td>
+                                    {% if request.user.role != 'contractor' and not is_assessor  %}
                                     <td>
                                         <button type="button" class="btn btn-sm btn-success w-100 mb-2"><a
                                                 href="{% url 'edit_app' qaa.pk %}">Edit</a></button>
                                     </td>
+                                    {% endif %}
                                     <td>
                                         <a href="{% url 'dashboard_application_info' qaa.id %}"
                                            class="btn btn-sm btn-info w-100 mb-2">View</a>
