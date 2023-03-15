@@ -122,52 +122,52 @@
                             {% for qaa in qaas %}
 
                                 {% if qaa.application_status %}
+                                
                                     <tr>
-
-                                    <td>
-
-
-                                        <!-- Button trigger modal -->
-                                        {% if request.user.role == 'contractor' %}
-                                            <button type="button" class="btn btn-sm btn-success w-100 mb-2"
-                                                    data-toggle="modal" data-target="#project-{{ qaa.id }}">
-                                                child
-                                            </button>
-                                        {% endif %}
-
-                                        <!-- Modal -->
-                                        <div class="modal fade" id="project-{{ qaa.id }}" tabindex="-1" role="dialog"
-                                             aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered" role="document">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="exampleModalLongTitle">Project
-                                                            Info</h5>
-                                                        <button type="button" class="close" data-dismiss="modal"
-                                                                aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <form method="post">
-                                                            {% csrf_token %}
-                                                            <input type="text" name="project_title_child"
-                                                                   class="form-control" placeholder="Project Title">
-                                                            <input type="text" name="project_value_child"
-                                                                   class="form-control mt-3" placeholder="Value">
-                                                            <input type="text" name="parent_object" hidden
-                                                                   value="{{ qaa.pi.id }}" class="form-control mt-3"
-                                                                   placeholder="Value">
-                                                            <button type="submit" class="btn btn-primary mt-3">Submit
+                                        <td>
+                                            <!-- Button trigger modal -->
+                                            {% if request.user.role == 'contractor' %}
+                                                <button type="button" class="btn btn-sm btn-success w-100 mb-2"
+                                                        data-toggle="modal" data-target="#project-{{ qaa.id }}">
+                                                    child
+                                                </button>
+                                            {% endif %}
+        
+                                            <!-- Modal -->
+                                            <div class="modal fade" id="project-{{ qaa.id }}" tabindex="-1" role="dialog"
+                                                 aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLongTitle">Project
+                                                                Info</h5>
+                                                            <button type="button" class="close" data-dismiss="modal"
+                                                                    aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
                                                             </button>
-                                                        </form>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <form method="post">
+                                                                {% csrf_token %}
+                                                                <input type="text" name="project_title_child"
+                                                                       class="form-control" placeholder="Project Title">
+                                                                <input type="text" name="project_value_child"
+                                                                       class="form-control mt-3" placeholder="Value">
+                                                                <input type="text" name="parent_object" hidden
+                                                                       value="{{ qaa.pi.id }}" class="form-control mt-3"
+                                                                       placeholder="Value">
+                                                                <button type="submit" class="btn btn-primary mt-3">Submit
+                                                                </button>
+                                                            </form>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
+        
+                                        </td> 
+                                              
 
-
-                                    </td>
+                                  
                                     <td style="text-align: center;min-width:150px;">
 
                                         <span style="font-size:0;">{{ qaa.created_date|date:'Ymd' }}</span>
@@ -269,6 +269,10 @@
                                                 </button>
                                             {% endif %}
                                         {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'generate_qr' qaa.user.email %}"
+                                           class="btn btn-sm btn-info w-100 mb-2">Email SEND</a>
                                     </td>
                                     <td>
 

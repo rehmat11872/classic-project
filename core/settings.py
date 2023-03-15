@@ -159,25 +159,52 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        'DISABLE_SERVER_SIDE_CURSORS': True,
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'mydb', 
+        'USER': 'myuser',
+        'PASSWORD': 'mypass',
+        'HOST': '127.0.0.1', 
+        'PORT': '5432',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'mydb', 
+        'USER': 'myuser',
+        'PASSWORD': 'mypass',
+        'HOST': '127.0.0.1', 
+        'PORT': '5432',
     }
 }
 
-import dj_database_url
-db_from_env = dj_database_url.config(default=config('DATABASE_URL', default=None), conn_max_age=500)
-DATABASES['default'].update(db_from_env)
 
-if any(db_from_env):
-    use_mssql = config('USE_MSSQL', default=0)
-    if use_mssql == 1:
-        DATABASES['default']['ENGINE'] = 'sql_server.pyodbc'
-        DATABASES['default']['OPTIONS']['driver'] = 'ODBC Driver 13 for SQL Server'
-    else:
-        DATABASES['default']['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
-else:
-    SPATIALITE_LIBRARY_PATH='/usr/local/lib/mod_spatialite.dylib'
+
+
+# import dj_database_url
+# db_from_env = dj_database_url.config(default=config('DATABASE_URL', default=None), conn_max_age=500)
+# DATABASES['default'].update(db_from_env)
+
+
+
+# import dj_database_url
+# db_from_env = dj_database_url.config(default=config('DATABASE_URL', default=None), conn_max_age=500)
+# DATABASES['default'].update(db_from_env)
+
+# if any(db_from_env):
+#     use_mssql = config('USE_MSSQL', default=0)
+#     if use_mssql == 1:
+#         DATABASES['default']['ENGINE'] = 'sql_server.pyodbc'
+#         DATABASES['default']['OPTIONS']['driver'] = 'ODBC Driver 13 for SQL Server'
+#     else:
+#         DATABASES['default']['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
+# else:
+#     SPATIALITE_LIBRARY_PATH='/usr/local/lib/mod_spatialite.dylib'
+# if any(db_from_env):
+#     use_mssql = config('USE_MSSQL', default=0)
+#     if use_mssql == 1:
+#         DATABASES['default']['ENGINE'] = 'sql_server.pyodbc'
+#         DATABASES['default']['OPTIONS']['driver'] = 'ODBC Driver 13 for SQL Server'
+#     else:
+#         DATABASES['default']['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
+# else:
+#     SPATIALITE_LIBRARY_PATH='/usr/local/lib/mod_spatialite.dylib'
 
 # Auth User Model
 AUTH_USER_MODEL = 'users.CustomUser'
@@ -261,7 +288,12 @@ STATICFILES_DIRS = (
 # EMAIL_USE_TLS = True
 # DEFAULT_FROM_EMAIL = 'noreply@cidb.gov.my'
 ANYMAIL = {
-    'SENDGRID_API_KEY': config('SENDGRID_API_KEY'),
+    # 'SENDGRID_API_KEY': config('SENDGRID_API_KEY'),
+    'SENDGRID_API_KEY': 'dghdhfd3487yerv4',
+
+    # 'SENDGRID_API_KEY': config('SENDGRID_API_KEY'),
+    'SENDGRID_API_KEY': 'dghdhfd3487yerv4',
+
 }
 EMAIL_BACKEND = "anymail.backends.sendgrid.EmailBackend"
 DEFAULT_FROM_EMAIL = 'QLASSIC Portal <noreply@cidb.gov.my>'  # if you don't already have this in settings
@@ -384,3 +416,13 @@ SIMPLE_JWT = {
 }
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 1048576000
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'iamtahir727@gmail.com'
+EMAIL_HOST_PASSWORD = 'jvyaysudqpyowece'
+EMAIL_USE_TLS = True
+MAIL_USE_SSL = True
+EMAIL_PORT = 587
+

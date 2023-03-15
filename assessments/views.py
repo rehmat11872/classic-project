@@ -42,7 +42,7 @@ from assessments.models import (
     SuggestedAssessor,
     AssignedAssessor,
     AssessmentData, SyncResult, WorkCompletionForm,
-    Scope
+    Scope, Survey
 )
 
 # SOAP
@@ -59,7 +59,12 @@ from io import BytesIO
 from django.views.generic import TemplateView, View, CreateView
 from django.urls import reverse
 from .utils import CreateExcell
-
+import qrcode
+from django.http import HttpResponse
+from django.core.mail import send_mail
+from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
+import io
 
 ### Admin - Application Module ###
 @login_required(login_url="/login/")
@@ -252,8 +257,8 @@ def dashboard_application_new_2(request, contractor_registration_number, id):
                                            project_reference_number=id)[0]
 
     qaa = \
-    QlassicAssessmentApplication.objects.filter(pi__contractor_cidb_registration_no=contractor_registration_number,
-                                                pi__project_reference_number=id).order_by('-created_date')[0]
+        QlassicAssessmentApplication.objects.filter(pi__contractor_cidb_registration_no=contractor_registration_number,
+                                                    pi__project_reference_number=id).order_by('-created_date')[0]
     pi = qaa.pi
 
     form_pi = ProjectInfoCreateForm(instance=pi)
@@ -287,8 +292,8 @@ def dashboard_application_new_3(request, contractor_registration_number, id):
                                            project_reference_number=id)[0]
 
     qaa = \
-    QlassicAssessmentApplication.objects.filter(pi__contractor_cidb_registration_no=contractor_registration_number,
-                                                pi__project_reference_number=id).order_by('-created_date')[0]
+        QlassicAssessmentApplication.objects.filter(pi__contractor_cidb_registration_no=contractor_registration_number,
+                                                    pi__project_reference_number=id).order_by('-created_date')[0]
     pi = qaa.pi
 
     print(generate_qaa_number(qaa))
@@ -449,6 +454,7 @@ def dashboard_application_info(request, id):
     if request.method == "POST":
         obj = QlassicAssessmentApplication.objects.filter(id=id).first()
         date = request.POST.get('get_date')
+        print(date, 'date________:::::')
         datetime_object = datetime.datetime.strptime(date, '%d/%m/%Y')
         obj.proposed_date = datetime_object
         obj.save()
@@ -471,6 +477,13 @@ def dashboard_application_info_assessor(request, id, assessor_mode):
 
     qaa = get_object_or_404(QlassicAssessmentApplication, id=id)
     supporting_documents = get_supporting_documents(qaa)
+    if request.method == "POST":
+        obj = QlassicAssessmentApplication.objects.filter(id=id).first()
+        date = request.POST.get('get_date')
+        datetime_object = datetime.datetime.strptime(date, '%d/%m/%Y')
+        obj.proposed_date = datetime_object
+        obj.save()
+        return redirect('dashboard_application_info_assessor', id=id, assessor_mode=assessor_mode)
     context = {
         'mode': mode,
         'assessor_view': True,
@@ -690,38 +703,42 @@ def dashboard_application_verify(request, id):
 
 @login_required(login_url="/login/")
 def dashboard_application_list(request):
-    qaas = None
-    role_display_staff = [
-        'superadmin',
-        'casc_reviewer',
-        'casc_verifier',
-        'cidb_verifier',
-    ]
-    role_display_applicant = [
-        'contractor',
-        'applicant',
-    ]
+    user = request.user
+    is_assessor = False
+    try:
+        assessor = Assessor.objects.get(user=user)
+        is_assessor = True
+    except Assessor.DoesNotExist:
+        pass    
+    qaas = QlassicAssessmentApplication.objects.all().order_by('-created_date')
+    # qaas = None
+    # role_display_staff = [
+    #     'superadmin',
+    #     'casc_reviewer',
+    #     'casc_verifier',
+    #     'cidb_verifier',
+    # ]
+    # role_display_applicant = [
+    #     'contractor',
+    #     'applicant',
+    # ]
 
     # alert for none
     # print(request.user.role)
     # if request.user.role == 'none':
     #    messages.warning(request, 'WE DID IT BABYYY')
 
-    role_type = ''
-    if request.user.role in role_display_staff:
-        print('if')
-        role_type = 'staff'
-        qaas = QlassicAssessmentApplication.objects.all().order_by('-created_date')
-        print(qaas, '________qasssss::::::::')
-    elif request.user.role in role_display_applicant:
-        print('elif')
-        role_type = 'applicant'
-        qaas = QlassicAssessmentApplication.objects.all().filter(user=request.user).order_by('-created_date')
-    else:
-        print('else')
-        messages.warning(request,
-                         "Please write us a letter and email at casc@cream.my for verification purpose. Download template letter at Homepage>Publication (click CIDB's logo)")
-        qaas = None
+    # role_type = ''
+    # if request.user.role in role_display_staff:
+    #     role_type = 'staff'
+    #     qaas = QlassicAssessmentApplication.objects.all().order_by('-created_date')
+    # elif request.user.role in role_display_applicant:
+    #     role_type = 'applicant'
+    #     qaas = QlassicAssessmentApplication.objects.all().filter(user=request.user).order_by('-created_date')
+    # else:
+    #     messages.warning(request,
+    #                      "Please write us a letter and email at casc@cream.my for verification purpose. Download template letter at Homepage>Publication (click CIDB's logo)")
+    #     qaas = None
 
     # GET Filter
     sector = ''
@@ -732,10 +749,11 @@ def dashboard_application_list(request):
                 qaas = qaas.filter(pi__project_type=sector)
 
     context = {
-        'role_type': role_type,
+        # 'role_type': role_type,
         'sector': sector,
         'qaas': qaas,
         'payment_history_url': get_payment_history_url(request),
+        'is_assessor': is_assessor,
     }
 
     if request.method == 'POST':
@@ -1719,6 +1737,7 @@ def addproject(request):
 
 
 class AddProjectCreateView(CreateView):
+    print('this view is under running')
     form_class = AddProjectForm
     template_name = "dashboard/application/project_list.html"
     model = Contractor
@@ -1726,7 +1745,7 @@ class AddProjectCreateView(CreateView):
     def form_valid(self, form):
         form.save()
         print(form.errors)
-        messages.success(self.request, "Program Category Added Successfully")
+        messages.success(self.request, "Contractors Added Successfully")
         self.object = form.save()
         return super().form_valid(form)
 
@@ -1800,6 +1819,24 @@ def excel_view(request):
     work_sheet.write(0, 8, 'Ptotal:', style_head_row)
     work_sheet.write(0, 9, 'stotal:', style_head_row)
     work_sheet.write(0, 10, 'ctotal:', style_head_row)
+    work_sheet.write(0, 11, 'architectural_work:', style_head_row)
+    work_sheet.write(0, 12, 'floor_finishes:', style_head_row)
+    work_sheet.write(0, 13, 'internal_wall:', style_head_row)
+    work_sheet.write(0, 14, 'ceiling:', style_head_row)
+    work_sheet.write(0, 15, 'door:', style_head_row)
+    work_sheet.write(0, 16, 'window:', style_head_row)
+    work_sheet.write(0, 17, 'internal_fixtures:', style_head_row)
+    work_sheet.write(0, 18, 'roof:', style_head_row)
+    work_sheet.write(0, 19, 'external_wall:', style_head_row)
+    work_sheet.write(0, 20, 'apron_perimeter_drain:', style_head_row)
+    work_sheet.write(0, 21, 'car_park:', style_head_row)
+    work_sheet.write(0, 22, 'material_functional_test:', style_head_row)
+    work_sheet.write(0, 23, 'total:', style_head_row)
+    work_sheet.write(0, 24, 'me_fittings:', style_head_row)
+    work_sheet.write(0, 25, 'mock_up_score:', style_head_row)
+    work_sheet.write(0, 26, 'qlassic_score:', style_head_row)
+    work_sheet.write(0, 27, 'created_by:', style_head_row)
+    work_sheet.write(0, 28, 'modified_by:', style_head_row)
 
     # Generate worksheet data row data.
     row = 1
@@ -1815,6 +1852,24 @@ def excel_view(request):
         work_sheet.write(row, 8, data.ptotal)
         work_sheet.write(row, 9, data.stotal)
         work_sheet.write(row, 10, data.ctotal)
+        work_sheet.write(row, 11, data.architectural_work)
+        work_sheet.write(row, 12, data.floor_finishes)
+        work_sheet.write(row, 13, data.internal_wall)
+        work_sheet.write(row, 14, data.ceiling)
+        work_sheet.write(row, 15, data.door)
+        work_sheet.write(row, 16, data.window)
+        work_sheet.write(row, 17, data.internal_fixtures)
+        work_sheet.write(row, 18, data.roof)
+        work_sheet.write(row, 19, data.external_wall)
+        work_sheet.write(row, 20, data.apron_perimeter_drain)
+        work_sheet.write(row, 21, data.car_park)
+        work_sheet.write(row, 22, data.material_functional_test)
+        work_sheet.write(row, 23, data.total)
+        work_sheet.write(row, 24, data.me_fittings)
+        work_sheet.write(row, 25, data.mock_up_score)
+        work_sheet.write(row, 26, data.qlassic_score)
+        work_sheet.write(row, 27, data.created_by)
+        work_sheet.write(row, 28, data.modified_by)
 
         row = row + 1
 
@@ -1896,7 +1951,60 @@ def dashboard_application_info_for_child(request, id, pk, counter):
         'qaa': qaa,
         'supporting_documents': supporting_documents,
         "child": qaas_child,
-        "counter":counter
+        "counter": counter
     }
 
     return render(request, "dashboard/application/application_info.html", context)
+
+
+def generate_qr(request, email):
+    # Generate QR code
+    host = request.get_host()
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(f"{host}/dashboard/survey/")
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+
+    # Save QR code image to memory buffer
+    buffer = io.BytesIO()
+    img.save(buffer, format="PNG")
+    buffer.seek(0)
+
+    # Create email message
+    subject = 'Scan this QR code to give your feedback'
+    from_email = settings.EMAIL_HOST_USER
+    to_email = [email,]
+
+    message = EmailMultiAlternatives(subject, '', from_email, to_email)
+    message.attach_alternative('<p>Please scan the attached QR code to give your feedback.</p>', 'text/html')
+    message.attach('qr_code.png', buffer.getvalue(), 'image/png')
+
+    # Send email
+    message.send()
+
+    # Create HTTP response
+    response = HttpResponse(content_type="image/png")
+    img.save(response, "PNG")
+
+    return redirect("dashboard_application_list")
+
+
+class SubmitSurveyView(LoginRequiredMixin, CreateView):
+    template_name = "Get_feedback.html"
+    model = Survey
+    fields = ['email', 'name', 'comment']
+    login_url = 'home'
+
+    def form_valid(self, form):
+        self.object = form.save()
+        self.object.user = self.request.user
+        self.object.save()
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse("home")

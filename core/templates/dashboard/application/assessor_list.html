@@ -161,7 +161,7 @@
                   <th>{{ sa.qaa.pi.get_project_location_display }}</th>
                   <th>{% if sa.acception %}{{ sa.get_acception_display }}{% else %}Pending{% endif %}</th>
                   <td>
-                    <a href="{% url 'dashboard_application_info_assessor' sa.qaa.id 'own' %}" class="btn btn-sm btn-info w-100 mb-2">View</button>
+                    <a href="{% url 'dashboard_application_info_assessor' sa.qaa.id 'own' %}" class="btn btn-sm btn-info w-100 mb-2">View 11</button>
                     {% if sa.acception == 'pending' %}
                     <a href="{% url 'dashboard_application_assessor_approve' sa.id %}" class="btn btn-sm btn-success w-100 mb-2">Verify</button>
                     {% endif %}
